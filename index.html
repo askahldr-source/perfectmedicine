@@ -12,34 +12,73 @@
       <h1>PerfectMedicine</h1>
       <span class="brand-amrito">by Amrito</span>
     </div>
-    <p>Your trusted LTP Calculator</p>
-    <button class="signup-btn" onclick="window.location='#signup'">Sign Up</button>
+    <p>Your trusted LTP Calculator & Option Chain</p>
+    <button class="signup-btn" onclick="window.location='#login'">Sign In</button>
   </header>
   <main>
-    <section class="calculator-section">
+    <section class="login-section" id="login-section">
+      <h2>Login</h2>
+      <form id="login-form">
+        <label for="username">Username:</label>
+        <input type="text" id="username" required>
+        <label for="password">Password:</label>
+        <input type="password" id="password" required>
+        <button type="submit">Login</button>
+      </form>
+      <div id="login-result"></div>
+    </section>
+    <section class="free-section" id="free-section" style="display:none">
       <h2>LTP Calculator</h2>
       <form id="ltp-form">
         <label for="last-traded-price">Last Traded Price:</label>
-        <input type="number" id="last-traded-price" name="ltp" required step="0.01" min="0">
+        <input type="number" id="last-traded-price" required step="0.01" min="0">
         <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" name="qty" required step="1" min="1">
+        <input type="number" id="quantity" required step="1" min="1">
         <button type="submit">Calculate</button>
       </form>
       <div id="result"></div>
-    </section>
-    <section class="optionchain-section">
-      <h2>Option Chain (Demo)</h2>
-      <div id="optionchain-placeholder">
-        <p>Option Chain Opening Time is available for Premium users only.</p>
-        <button class="premium-btn" onclick="window.location='#signup'">Unlock Premium</button>
+      <h2>Option Chain Table (Demo)</h2>
+      <table id="optionchain-table">
+        <thead>
+          <tr>
+            <th>Strike Price</th>
+            <th>Call Open Interest</th>
+            <th>Put Open Interest</th>
+            <th>Last Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>18500</td><td>23000</td><td>21000</td><td>57.5</td></tr>
+          <tr><td>18600</td><td>19400</td><td>19700</td><td>44.2</td></tr>
+          <tr><td>18700</td><td>14200</td><td>18100</td><td>22.1</td></tr>
+        </tbody>
+      </table>
+      <button id="history-btn">View Historical Data</button>
+      <div id="history-data" style="display:none">
+        <h3>Historical Option Chain (Sample)</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Strike Price</th>
+              <th>Call OI</th>
+              <th>Put OI</th>
+              <th>LTP</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2025-09-25</td><td>18500</td><td>21500</td><td>20500</td><td>56.1</td></tr>
+            <tr><td>2025-09-24</td><td>18500</td><td>22000</td><td>20200</td><td>55.2</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
-    <section class="premium-section" id="signup">
+    <section class="premium-section" id="premium-section" style="display:none">
       <h2>Premium Plan</h2>
-      <p><strong>Unlock Option Chain Opening Time!</strong></p>
+      <p>Unlock Option Chain & Historical Data!</p>
       <ul>
-        <li>Access premium analytics</li>
-        <li>Early access to new features</li>
+        <li>Access full option chain analytics</li>
+        <li>Historical data for deeper insights</li>
         <li>Priority WhatsApp support</li>
       </ul>
       <div class="upi-payment">
