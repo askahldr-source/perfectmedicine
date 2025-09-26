@@ -1,0 +1,172 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f6fbff;
+  color: #222;
+}
+header {
+  background: linear-gradient(90deg, #1e90ff 60%, #38ef7d 100%);
+  color: #fff;
+  padding: 2rem 1rem 1rem 1rem;
+  text-align: center;
+  position: relative;
+}
+.brand-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.brand-bar h1 {
+  margin: 0 0.5rem 0 0;
+  font-size: 2.2rem;
+  font-weight: 700;
+}
+.brand-amrito {
+  background: #38ef7d;
+  color: #222;
+  border-radius: 8px;
+  padding: 0.3rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+.signup-btn {
+  background: #fff;
+  color: #1e90ff;
+  border: none;
+  padding: 0.7rem 2rem;
+  border-radius: 6px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 1rem;
+  box-shadow: 0 2px 4px #38ef7d33;
+  transition: background 0.2s, color 0.2s;
+}
+.signup-btn:hover {
+  background: #38ef7d;
+  color: #fff;
+}
+main {
+  padding: 2rem 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.calculator-section, .contact-section, .premium-section, .optionchain-section {
+  background: #fff;
+  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(30, 144, 255, 0.08);
+  padding: 1.5rem;
+}
+.calculator-section h2, .contact-section h2, .premium-section h2, .optionchain-section h2 {
+  color: #1e90ff;
+  margin-top: 0;
+}
+form label {
+  display: block;
+  margin: 1rem 0 0.3rem 0;
+  font-weight: 500;
+}
+form input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #aee6c8;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+form button {
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 4px #38ef7d33;
+  transition: background 0.2s;
+}
+form button:hover {
+  background: #38ef7d;
+}
+#result {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #38ef7d;
+  font-weight: 600;
+}
+.premium-section ul {
+  text-align: left;
+  margin: 1rem auto;
+  padding: 0 0 0 1.2rem;
+}
+.premium-btn {
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 0.7rem 2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 2px 4px #38ef7d33;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+.premium-btn:hover {
+  background: #38ef7d;
+  color: #fff;
+}
+.upi-payment {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: #e3ffe6;
+  border-radius: 8px;
+  color: #222;
+}
+.upi-payment button {
+  background: #1e90ff;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 1rem;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
+.upi-payment button:hover {
+  background: #38ef7d;
+  color: #fff;
+}
+.contact-section a {
+  color: #1e90ff;
+  text-decoration: none;
+  font-weight: 500;
+}
+footer {
+  text-align: center;
+  padding: 1rem;
+  background: #222;
+  color: #fff;
+  font-size: 0.95rem;
+  border-top: 3px solid #38ef7d;
+}
+@media (max-width: 600px) {
+  main {
+    padding: 1rem 0.5rem;
+  }
+  .calculator-section, .contact-section, .premium-section, .optionchain-section {
+    padding: 1rem;
+  }
+  .brand-bar h1 {
+    font-size: 1.4rem;
+  }
+  .brand-amrito {
+    font-size: 1rem;
+    padding: 0.2rem 0.6rem;
+  }
+}
