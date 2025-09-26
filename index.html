@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PerfectMedicine & Amrito - LTP Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand-bar">
+      <h1>PerfectMedicine</h1>
+      <span class="brand-amrito">by Amrito</span>
+    </div>
+    <p>Your trusted LTP Calculator</p>
+    <button class="signup-btn" onclick="window.location='#signup'">Sign Up</button>
+  </header>
+  <main>
+    <section class="calculator-section">
+      <h2>LTP Calculator</h2>
+      <form id="ltp-form">
+        <label for="last-traded-price">Last Traded Price:</label>
+        <input type="number" id="last-traded-price" name="ltp" required step="0.01" min="0">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="qty" required step="1" min="1">
+        <button type="submit">Calculate</button>
+      </form>
+      <div id="result"></div>
+    </section>
+    <section class="optionchain-section">
+      <h2>Option Chain (Demo)</h2>
+      <div id="optionchain-placeholder">
+        <p>Option Chain Opening Time is available for Premium users only.</p>
+        <button class="premium-btn" onclick="window.location='#signup'">Unlock Premium</button>
+      </div>
+    </section>
+    <section class="premium-section" id="signup">
+      <h2>Premium Plan</h2>
+      <p><strong>Unlock Option Chain Opening Time!</strong></p>
+      <ul>
+        <li>Access premium analytics</li>
+        <li>Early access to new features</li>
+        <li>Priority WhatsApp support</li>
+      </ul>
+      <div class="upi-payment">
+        <p><strong>Price:</strong> ₹199/month</p>
+        <p>
+          Pay via UPI: <span id="upi-id">6296537526@ybl</span>
+          <button onclick="copyUPI()">Copy UPI</button>
+        </p>
+        <p>
+          After payment, send your details on WhatsApp:<br>
+          <a href="https://wa.me/9083870471" target="_blank">Contact on WhatsApp</a>
+        </p>
+      </div>
+      <button class="premium-btn">Subscribe to Premium</button>
+    </section>
+    <section class="contact-section">
+      <h2>Contact Us</h2>
+      <p>WhatsApp: <a href="https://wa.me/9083870471" target="_blank" rel="noopener">9083870471</a></p>
+    </section>
+  </main>
+  <footer>
+    <p>Powered by Copilot | &copy; 2025 PerfectMedicine & Amrito</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>
