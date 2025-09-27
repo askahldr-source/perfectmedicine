@@ -105,3 +105,41 @@
   <script src="script.js"></script>
 </body>
 </html>
+from flask import Flask, request, jsonify
+import random
+
+app = Flask(__name__)
+
+@app.route("/api/optionchain")
+def option_chain():
+    symbol = request.args.get("symbol", "NIFTY").upper()
+    expiry = request.args.get("expiry", "2025-10-30")
+
+    base_price = 20000
+    data = []
+    for i in range(-8, 9):
+        strike = base_price + i * 100
+        ce_vol = random.randint(100, 5000)
+        pe_vol = random.randint(100, 5000)
+        ce_oi = random.randint(1000, 20000)
+        pe_oi = random.randint(1000, 20000)
+        ce_ltp = round(random.uniform(10, 200), 2)
+        pe_ltp = round(random.uniform(10, 200), 2)
+
+        data.append({
+            "strike": strike,
+            "ce": {"oi": ce_oi, "vol": ce_vol, "ltp": ce_ltp},
+            "pe": {"oi": pe_oi, "vol": pe_vol, "ltp": pe_ltp},
+        })
+
+    response = {
+        "symbol": symbol,
+        "expiry": expiry,
+        "ltp": round(base_price + random.uniform(-50, 50), 2),
+        "data": data
+    }
+    return jsonify(response)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+    
