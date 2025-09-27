@@ -100,46 +100,190 @@
     </section>
   </main>
   <footer>
-    <p>Powered by Copilot | &copy; 2025 PerfectMedicine & Amrito</p>
+    <p>Powered by aska | &copy; 2025 PerfectMedicine & Amrito</p>
   </footer>
   <script src="script.js"></script>
 </body>
 </html>
-from flask import Flask, request, jsonify
-import random
+<!doctype html>
 
-app = Flask(__name__)
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PerfectMedicine — LTP Calculator (Demo)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    body{background:#f7fafc;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
+    .hero{padding:28px 16px;background:linear-gradient(90deg,#0ea5a1, #06b6d4);color:white;border-radius:12px}
+    .card{border-radius:12px}
+    .strike-cell{font-weight:600}
+    .highlight-vol{box-shadow:0 0 0 3px rgba(255,193,7,0.08);border-left:4px solid #ffc107}
+    .highlight-oi{box-shadow:0 0 0 3px rgba(99,102,241,0.06);border-left:4px solid #6366f1}
+    @media (max-width:767px){ .table-responsive{font-size:13px} }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="hero mb-4">
+      <div class="row align-items-center">
+        <div class="col-md-8">
+          <h1 class="h3 mb-1">PerfectMedicine — LTP Calculator</h1>
+          <p class="mb-0">NSE-style option chain — এখন লাইভ ব্যাকএন্ড Render API ব্যবহার করবে।</p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+          <a href="#" class="btn btn-light btn-sm">ডকুমেন্টেশন</a>
+        </div>
+      </div>
+    </div><div class="row g-3">
+  <div class="col-lg-4">
+    <div class="card p-3">
+      <form id="searchForm">
+        <div class="mb-3">
+          <label class="form-label">Symbol (উদাহরণ: NIFTY)</label>
+          <input id="symbol" class="form-control" placeholder="Enter symbol, e.g. NIFTY" value="NIFTY">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Expiry (YYYY-MM-DD)</label>
+          <input id="expiry" class="form-control" placeholder="2025-10-30" value="2025-10-30">
+        </div>
+        <div class="mb-3 d-flex gap-2">
+          <button class="btn btn-primary" id="loadBtn" type="submit">Load Option Chain</button>
+          <button class="btn btn-outline-secondary" id="demoBtn" type="button">Load Demo Data</button>
+        </div>
+        <small class="text-muted">Backend API: <code>https://perfectmedicine-backend.onrender.com/api/optionchain</code></small>
+      </form>
+    </div>
+  </div>
 
-@app.route("/api/optionchain")
-def option_chain():
-    symbol = request.args.get("symbol", "NIFTY").upper()
-    expiry = request.args.get("expiry", "2025-10-30")
+  <div class="col-lg-8">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h5 class="mb-0">Option Chain</h5>
+          <small id="meta" class="text-muted">Symbol: - | Expiry: - | LTP: -</small>
+        </div>
+        <div>
+          <button id="downloadCsv" class="btn btn-sm btn-outline-success">Download CSV</button>
+        </div>
+      </div>
 
-    base_price = 20000
-    data = []
-    for i in range(-8, 9):
-        strike = base_price + i * 100
-        ce_vol = random.randint(100, 5000)
-        pe_vol = random.randint(100, 5000)
-        ce_oi = random.randint(1000, 20000)
-        pe_oi = random.randint(1000, 20000)
-        ce_ltp = round(random.uniform(10, 200), 2)
-        pe_ltp = round(random.uniform(10, 200), 2)
+      <div class="table-responsive" style="max-height:520px;overflow:auto">
+        <table id="chainTable" class="table table-sm table-hover align-middle">
+          <thead class="table-light position-sticky top-0" style="z-index:1">
+            <tr>
+              <th>CE OI</th>
+              <th>CE Vol</th>
+              <th>CE LTP</th>
+              <th class="text-center">Strike</th>
+              <th>PE LTP</th>
+              <th>PE Vol</th>
+              <th>PE OI</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-        data.append({
-            "strike": strike,
-            "ce": {"oi": ce_oi, "vol": ce_vol, "ltp": ce_ltp},
-            "pe": {"oi": pe_oi, "vol": pe_vol, "ltp": pe_ltp},
-        })
+    </div>
+  </div>
+</div>
 
-    response = {
-        "symbol": symbol,
-        "expiry": expiry,
-        "ltp": round(base_price + random.uniform(-50, 50), 2),
-        "data": data
+<footer class="text-center text-muted mt-4">Made with ❤️ by PerfectAnalyst — Powered by Render API</footer>
+
+  </div>  <script>
+    const BACKEND_URL = "https://perfectmedicine-backend.onrender.com"; // Replace with your actual Render backend URL
+
+    function generateDemoChain(symbol, expiry){
+      const strikes = [];
+      const base = 20000;
+      for(let i=-8;i<=8;i++){
+        const strike = base + i*100;
+        const ceVol = Math.round(Math.random()*5000);
+        const peVol = Math.round(Math.random()*5000);
+        const ceOi = Math.round(Math.random()*20000);
+        const peOi = Math.round(Math.random()*20000);
+        const ceLtp = +(Math.random()*200 + 10).toFixed(2);
+        const peLtp = +(Math.random()*200 + 10).toFixed(2);
+        strikes.push({strike, ce:{oi:ceOi, vol:ceVol, ltp:ceLtp}, pe:{oi:peOi, vol:peVol, ltp:peLtp}})
+      }
+      return {symbol, expiry, ltp: base + (Math.random()*100-50), data: strikes}
     }
-    return jsonify(response)
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-    
+    function renderChain(json){
+      const tbody = document.querySelector('#chainTable tbody'); tbody.innerHTML = '';
+      const meta = document.getElementById('meta');
+      meta.textContent = `Symbol: ${json.symbol} | Expiry: ${json.expiry} | LTP: ${json.ltp.toFixed(2)}`;
+
+      let maxVol = -1, maxOi = -1, maxVolRow = null, maxOiRow = null;
+      json.data.forEach(r=>{
+        if(r.ce.vol > maxVol){ maxVol = r.ce.vol; maxVolRow = {type:'ce', strike:r.strike} }
+        if(r.pe.vol > maxVol){ maxVol = r.pe.vol; maxVolRow = {type:'pe', strike:r.strike} }
+        const oiChange = Math.abs(r.ce.oi - r.pe.oi);
+        if(oiChange > maxOi){ maxOi = oiChange; maxOiRow = {strike:r.strike} }
+      })
+
+      json.data.forEach(row=>{
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.ce.oi}</td>
+          <td>${row.ce.vol}</td>
+          <td>${row.ce.ltp}</td>
+          <td class='text-center strike-cell'>${row.strike}</td>
+          <td>${row.pe.ltp}</td>
+          <td>${row.pe.vol}</td>
+          <td>${row.pe.oi}</td>
+        `;
+        if(maxVolRow && maxVolRow.strike === row.strike){ tr.classList.add('highlight-vol') }
+        if(maxOiRow && maxOiRow.strike === row.strike){ tr.classList.add('highlight-oi') }
+        tbody.appendChild(tr);
+      })
+    }
+
+    async function loadOptionChain(symbol, expiry){
+      try{
+        const url = `${BACKEND_URL}/api/optionchain?symbol=${encodeURIComponent(symbol)}&expiry=${encodeURIComponent(expiry)}`;
+        const resp = await fetch(url, {cache:'no-store'});
+        if(!resp.ok) throw new Error('no backend');
+        const json = await resp.json();
+        renderChain(json);
+        return;
+      }catch(e){
+        const demo = generateDemoChain(symbol, expiry);
+        renderChain(demo);
+      }
+    }
+
+    function downloadCsvFromTable(){
+      const rows = [];
+      const ths = Array.from(document.querySelectorAll('#chainTable thead th')).map(t=>t.textContent.trim());
+      rows.push(ths.join(','));
+      document.querySelectorAll('#chainTable tbody tr').forEach(tr=>{
+        const cols = Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/,/g,''));
+        rows.push(cols.join(','));
+      })
+      const blob = new Blob([rows.join('\n')], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'option_chain.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('searchForm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const symbol = document.getElementById('symbol').value.trim();
+      const expiry = document.getElementById('expiry').value.trim();
+      loadOptionChain(symbol || 'NIFTY', expiry || '2025-10-30');
+    })
+    document.getElementById('demoBtn').addEventListener('click', ()=>{
+      const symbol = document.getElementById('symbol').value.trim();
+      const expiry = document.getElementById('expiry').value.trim();
+      const demo = generateDemoChain(symbol || 'NIFTY', expiry || '2025-10-30');
+      renderChain(demo);
+    })
+    document.getElementById('downloadCsv').addEventListener('click', downloadCsvFromTable);
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const demo = generateDemoChain('NIFTY','2025-10-30');
+      renderChain(demo);
+    })
+  </script></body>
+</html>
