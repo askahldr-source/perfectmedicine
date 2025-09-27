@@ -1,166 +1,242 @@
-<!doctype html>
-<html lang="bn">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Signup — PerfectMedicine</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-<style>
-body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #89f7fe, #66a6ff); min-height: 100vh; display: flex; justify-content: center; align-items: center; }
-.signup-card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); width: 100%; max-width: 450px; }
-h2 { color: #333; font-weight: 700; margin-bottom: 20px; }
-.btn-primary { background: #6366f1; border: none; }
-.btn-primary:hover { background: #4f46e5; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Option - Chain Analyser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #121212;
+            background-image: url('https://images.unsplash.com/photo-1633412802994-5c058f151b66?ixlib=rb-4.0.3');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .login-container {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 40px;
+            width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .login-title {
+            color: #ffffff;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .btn {
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-google {
+            background-color: #ffffff;
+            color: #333333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-google:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .btn-signup {
+            background-color: #ff7e00;
+            color: white;
+        }
+        
+        .btn-signup:hover {
+            background-color: #e66f00;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+            color: #888888;
+        }
+        
+        .divider::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #444444;
+            z-index: 1;
+        }
+        
+        .divider span {
+            background-color: rgba(30, 30, 30, 0.85);
+            padding: 0 15px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #ff7e00;
+            box-shadow: 0 0 0 2px rgba(255, 126, 0, 0.2);
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+        
+        .btn-login {
+            background-color: #ff7e00;
+            color: white;
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            background-color: #e66f00;
+        }
+        
+        .forgot-password {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .forgot-password a {
+            color: #ff7e00;
+            text-decoration: none;
+        }
+        
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<div class="signup-card">
-  <h2>Signup</h2>
-  <form id="signupForm">
-    <div class="mb-3">
-      <label>Email</label>
-      <input type="email" id="email" class="form-control" placeholder="example@mail.com" required>
-    </div>
-    <div class="mb-3">
-      <label>Password</label>
-      <input type="password" id="password" class="form-control" placeholder="Minimum 6 characters" required>
-    </div>
-    <div class="mb-3">
-      <label>Phone Number</label>
-      <input type="tel" id="phone" class="form-control" placeholder="10-digit number" required>
-    </div>
-    <div class="mb-3">
-      <button type="button" id="sendOtp" class="btn btn-outline-primary w-100">Send OTP</button>
-    </div>
-    <div class="mb-3" id="otpSection" style="display:none;">
-      <label>Enter OTP</label>
-      <input type="text" id="otpInput" class="form-control" placeholder="4-digit OTP">
-    </div>
-    <button type="submit" class="btn btn-primary w-100 mt-3">Signup</button>
-  </form>
-  <p class="mt-2 text-center">Already have an account? <a href="login.html">Login here</a></p>
-</div>
-<script>
-let generatedOtp = '';
-document.getElementById('sendOtp').addEventListener('click', function(){
-  const phone = document.getElementById('phone').value.trim();
-  if(!/^[0-9]{10}$/.test(phone)){ alert('Please enter a valid 10-digit phone number.'); return; }
-  generatedOtp = Math.floor(1000 + Math.random()*9000).toString();
-  alert('Demo OTP (for testing): ' + generatedOtp);
-  document.getElementById('otpSection').style.display = 'block';
-});
-document.getElementById('signupForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  const otp = document.getElementById('otpInput').value.trim();
-  if(!/\S+@\S+\.\S+/.test(email)){ alert('Please enter a valid email.'); return; }
-  if(password.length < 6){ alert('Password must be at least 6 characters.'); return; }
-  if(!/^[0-9]{10}$/.test(phone)){ alert('Please enter a valid 10-digit phone number.'); return; }
-  if(otp !== generatedOtp){ alert('Invalid OTP!'); return; }
-  localStorage.setItem('userEmail', email);
-  localStorage.setItem('userPassword', password);
-  localStorage.setItem('userPhone', phone);
-  alert('Signup successful! Please login.');
-  window.location.href = 'login.html';
-});
-</script>
-</body>
-</html>
-<!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — PerfectMedicine</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h3 class="mb-3">Login</h3>
-      <form id="loginForm">
-        <div class="mb-3">
-          <label>Email</label>
-          <input type="email" id="email" class="form-control" required>
+    <div class="login-container">
+        <h2 class="login-title">Welcome Back</h2>
+        
+        <div class="social-login">
+            <button class="btn btn-google">
+                <i class="fab fa-google"></i>
+                Sign in with Google
+            </button>
+            <button class="btn btn-signup">
+                Sign Up Free
+            </button>
         </div>
-        <div class="mb-3">
-          <label>Password</label>
-          <input type="password" id="password" class="form-control" required>
+        
+        <div class="divider">
+            <span>OR</span>
         </div>
-        <button class="btn btn-primary" type="submit">Login</button>
-      </form>
-      <p class="mt-2">Don't have an account? <a href="index.html">Signup here</a></p>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="Enter your Email/Mobile" required>
+            </div>
+            
+            <div class="form-group">
+                <div class="password-container">
+                    <input type="password" class="form-input" id="password" placeholder="Password" required>
+                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-login">Login →</button>
+        </form>
+        
+        <div class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </div>
     </div>
-  </div>
-</div>
 
-<script>
-document.getElementById('loginForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  const storedEmail = localStorage.getItem('userEmail');
-  const storedPassword = localStorage.getItem('userPassword');
-
-  if(email === storedEmail && password === storedPassword){
-    localStorage.setItem('isLoggedIn', 'true');
-    window.location.href = 'optionchain.html';
-  } else {
-    alert('Invalid credentials!');
-  }
-});
-</script>
-</body>
-</html>
-<!doctype html>
-<html lang="bn">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Login — PerfectMedicine</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-</head>
-<body>
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <h3 class="mb-3">Login</h3>
-      <form id="loginForm">
-        <div class="mb-3">
-          <label>Email</label>
-          <input type="email" id="email" class="form-control" required>
-        </div>
-        <div class="mb-3">
-          <label>Password</label>
-          <input type="password" id="password" class="form-control" required>
-        </div>
-        <button class="btn btn-primary" type="submit">Login</button>
-      </form>
-      <p class="mt-2">Don't have an account? <a href="index.html">Signup here</a></p>
-    </div>
-  </div>
-</div>
-
-<script>
-document.getElementById('loginForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  const storedEmail = localStorage.getItem('userEmail');
-  const storedPassword = localStorage.getItem('userPassword');
-
-  if(email === storedEmail && password === storedPassword){
-    localStorage.setItem('isLoggedIn', 'true');
-    window.location.href = 'optionchain.html';
-  } else {
-    alert('Invalid credentials!');
-  }
-});
-</script>
+    <script>
+        // Toggle password visibility
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Toggle the eye icon
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // Form submission
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Add your login logic here
+            alert('Login functionality would be implemented here');
+        });
+        
+        // Google sign in
+        document.querySelector('.btn-google').addEventListener('click', function() {
+            // Add Google sign-in logic here
+            alert('Google sign-in would be implemented here');
+        });
+        
+        // Sign up
+        document.querySelector('.btn-signup').addEventListener('click', function() {
+            // Add sign-up logic here
+            alert('Sign-up functionality would be implemented here');
+        });
+    </script>
 </body>
 </html>
