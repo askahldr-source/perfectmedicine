@@ -1,117 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PerfectMedicine & Amrito - LTP Calculator</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <header>
-    <div class="brand-bar">
-      <h1>PerfectMedicine</h1>
-      <span class="brand-amrito">by Amrito</span>
-    </div>
-    <p>Your trusted LTP Calculator & Option Chain</p>
-    <button class="signup-btn" onclick="window.location='#login'">Sign In</button>
-  </header>
-  <main>
-    <section class="login-section" id="login-section">
-      <h2>Login</h2>
-      <form id="login-form">
-        <label for="username">Username:</label>
-        <input type="text" id="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" required>
-        <button type="submit">Login</button>
-      </form>
-      <div id="login-result"></div>
-    </section>
-    <section class="free-section" id="free-section" style="display:none">
-      <h2>LTP Calculator</h2>
-      <form id="ltp-form">
-        <label for="last-traded-price">Last Traded Price:</label>
-        <input type="number" id="last-traded-price" required step="0.01" min="0">
-        <label for="quantity">Quantity:</label>
-        <input type="number" id="quantity" required step="1" min="1">
-        <button type="submit">Calculate</button>
-      </form>
-      <div id="result"></div>
-      <h2>Option Chain Table (Demo)</h2>
-      <table id="optionchain-table">
-        <thead>
-          <tr>
-            <th>Strike Price</th>
-            <th>Call Open Interest</th>
-            <th>Put Open Interest</th>
-            <th>Last Price</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>18500</td><td>23000</td><td>21000</td><td>57.5</td></tr>
-          <tr><td>18600</td><td>19400</td><td>19700</td><td>44.2</td></tr>
-          <tr><td>18700</td><td>14200</td><td>18100</td><td>22.1</td></tr>
-        </tbody>
-      </table>
-      <button id="history-btn">View Historical Data</button>
-      <div id="history-data" style="display:none">
-        <h3>Historical Option Chain (Sample)</h3>
-        <table>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Strike Price</th>
-              <th>Call OI</th>
-              <th>Put OI</th>
-              <th>LTP</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>2025-09-25</td><td>18500</td><td>21500</td><td>20500</td><td>56.1</td></tr>
-            <tr><td>2025-09-24</td><td>18500</td><td>22000</td><td>20200</td><td>55.2</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-    <section class="premium-section" id="premium-section" style="display:none">
-      <h2>Premium Plan</h2>
-      <p>Unlock Option Chain & Historical Data!</p>
-      <ul>
-        <li>Access full option chain analytics</li>
-        <li>Historical data for deeper insights</li>
-        <li>Priority WhatsApp support</li>
-      </ul>
-      <div class="upi-payment">
-        <p><strong>Price:</strong> ₹199/month</p>
-        <p>
-          Pay via UPI: <span id="upi-id">6296537526@ybl</span>
-          <button onclick="copyUPI()">Copy UPI</button>
-        </p>
-        <p>
-          After payment, send your details on WhatsApp:<br>
-          <a href="https://wa.me/9083870471" target="_blank">Contact on WhatsApp</a>
-        </p>
-      </div>
-      <button class="premium-btn">Subscribe to Premium</button>
-    </section>
-    <section class="contact-section">
-      <h2>Contact Us</h2>
-      <p>WhatsApp: <a href="https://wa.me/9083870471" target="_blank" rel="noopener">9083870471</a></p>
-    </section>
-  </main>
-  <footer>
-    <p>Powered by aska | &copy; 2025 PerfectMedicine & Amrito</p>
-  </footer>
-  <script src="script.js"></script>
-</body>
-</html>
 <!doctype html>
 
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>PerfectMedicine — LTP Calculator (Demo)</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PerfectMedicine — LTP Calculator Editable</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
     body{background:#f7fafc;font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial}
@@ -128,11 +21,8 @@
     <div class="hero mb-4">
       <div class="row align-items-center">
         <div class="col-md-8">
-          <h1 class="h3 mb-1">PerfectMedicine — LTP Calculator</h1>
-          <p class="mb-0">NSE-style option chain — এখন লাইভ ব্যাকএন্ড Render API ব্যবহার করবে।</p>
-        </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-          <a href="#" class="btn btn-light btn-sm">ডকুমেন্টেশন</a>
+          <h1 class="h3 mb-1">PerfectMedicine — LTP Calculator Editable</h1>
+          <p class="mb-0">এই ফাইল সম্পূর্ণ editable। তুমি যেকোনো পরিবর্তন করতে পারবে।</p>
         </div>
       </div>
     </div><div class="row g-3">
@@ -140,8 +30,8 @@
     <div class="card p-3">
       <form id="searchForm">
         <div class="mb-3">
-          <label class="form-label">Symbol (উদাহরণ: NIFTY)</label>
-          <input id="symbol" class="form-control" placeholder="Enter symbol, e.g. NIFTY" value="NIFTY">
+          <label class="form-label">Symbol</label>
+          <input id="symbol" class="form-control" placeholder="Enter symbol" value="NIFTY">
         </div>
         <div class="mb-3">
           <label class="form-label">Expiry (YYYY-MM-DD)</label>
@@ -151,7 +41,7 @@
           <button class="btn btn-primary" id="loadBtn" type="submit">Load Option Chain</button>
           <button class="btn btn-outline-secondary" id="demoBtn" type="button">Load Demo Data</button>
         </div>
-        <small class="text-muted">Backend API: <code>https://perfectmedicine-backend.onrender.com/api/optionchain</code></small>
+        <small class="text-muted">Backend URL: <code>https://perfectmedicine-backend.onrender.com</code></small>
       </form>
     </div>
   </div>
@@ -167,7 +57,6 @@
           <button id="downloadCsv" class="btn btn-sm btn-outline-success">Download CSV</button>
         </div>
       </div>
-
       <div class="table-responsive" style="max-height:520px;overflow:auto">
         <table id="chainTable" class="table table-sm table-hover align-middle">
           <thead class="table-light position-sticky top-0" style="z-index:1">
@@ -184,15 +73,14 @@
           <tbody></tbody>
         </table>
       </div>
-
     </div>
   </div>
 </div>
 
-<footer class="text-center text-muted mt-4">Made with ❤️ by PerfectAnalyst — Powered by Render API</footer>
+<footer class="text-center text-muted mt-4">Made with ❤️ by PerfectAnalyst — Fully Editable</footer>
 
   </div>  <script>
-    const BACKEND_URL = "https://perfectmedicine-backend.onrender.com"; // Replace with your actual Render backend URL
+    const BACKEND_URL = "https://perfectmedicine-backend.onrender.com";
 
     function generateDemoChain(symbol, expiry){
       const strikes = [];
@@ -267,23 +155,4 @@
       const a = document.createElement('a'); a.href = url; a.download = 'option_chain.csv'; a.click(); URL.revokeObjectURL(url);
     }
 
-    document.getElementById('searchForm').addEventListener('submit', e=>{
-      e.preventDefault();
-      const symbol = document.getElementById('symbol').value.trim();
-      const expiry = document.getElementById('expiry').value.trim();
-      loadOptionChain(symbol || 'NIFTY', expiry || '2025-10-30');
-    })
-    document.getElementById('demoBtn').addEventListener('click', ()=>{
-      const symbol = document.getElementById('symbol').value.trim();
-      const expiry = document.getElementById('expiry').value.trim();
-      const demo = generateDemoChain(symbol || 'NIFTY', expiry || '2025-10-30');
-      renderChain(demo);
-    })
-    document.getElementById('downloadCsv').addEventListener('click', downloadCsvFromTable);
-
-    document.addEventListener('DOMContentLoaded', ()=>{
-      const demo = generateDemoChain('NIFTY','2025-10-30');
-      renderChain(demo);
-    })
-  </script></body>
-</html>
+    document.getElementById('searchForm').addEventListener('
