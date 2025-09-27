@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Option - Chain Analyser</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>AI Option - Chain Analyser | লগইন</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -14,23 +14,145 @@
         }
         
         body {
-            background-color: #121212;
-            background-image: url('https://images.unsplash.com/photo-1633412802994-5c058f151b66?ixlib=rb-4.0.3');
-            background-size: cover;
-            background-position: center;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
             height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* অ্যানিমেটেড ব্যাকগ্রাউন্ড */
+        .bg-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .bg-animation span {
+            position: absolute;
+            display: block;
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 126, 0, 0.1);
+            border-radius: 50%;
+            animation: move 25s linear infinite;
+            bottom: -150px;
+        }
+        
+        .bg-animation span:nth-child(1) {
+            left: 25%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 0s;
+        }
+        
+        .bg-animation span:nth-child(2) {
+            left: 10%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 2s;
+            animation-duration: 12s;
+        }
+        
+        .bg-animation span:nth-child(3) {
+            left: 70%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 4s;
+        }
+        
+        .bg-animation span:nth-child(4) {
+            left: 40%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+            animation-duration: 18s;
+        }
+        
+        .bg-animation span:nth-child(5) {
+            left: 65%;
+            width: 20px;
+            height: 20px;
+            animation-delay: 0s;
+        }
+        
+        .bg-animation span:nth-child(6) {
+            left: 75%;
+            width: 110px;
+            height: 110px;
+            animation-delay: 3s;
+        }
+        
+        .bg-animation span:nth-child(7) {
+            left: 35%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 7s;
+        }
+        
+        .bg-animation span:nth-child(8) {
+            left: 50%;
+            width: 25px;
+            height: 25px;
+            animation-delay: 15s;
+            animation-duration: 45s;
+        }
+        
+        .bg-animation span:nth-child(9) {
+            left: 20%;
+            width: 15px;
+            height: 15px;
+            animation-delay: 2s;
+            animation-duration: 35s;
+        }
+        
+        .bg-animation span:nth-child(10) {
+            left: 85%;
+            width: 150px;
+            height: 150px;
+            animation-delay: 0s;
+            animation-duration: 11s;
+        }
+        
+        @keyframes move {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+                border-radius: 0;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+                border-radius: 50%;
+            }
         }
         
         .login-container {
             background-color: rgba(30, 30, 30, 0.85);
             backdrop-filter: blur(10px);
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 40px;
-            width: 400px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            width: 420px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff7e00, #ff9e40);
+            border-radius: 16px 16px 0 0;
         }
         
         .login-title {
@@ -38,6 +160,7 @@
             font-size: 28px;
             margin-bottom: 30px;
             text-align: center;
+            font-weight: 600;
         }
         
         .social-login {
@@ -48,25 +171,28 @@
         }
         
         .btn {
-            padding: 12px;
-            border-radius: 6px;
+            padding: 14px;
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             font-weight: 600;
             transition: all 0.3s ease;
-        }
-        
-        .btn-google {
-            background-color: #ffffff;
-            color: #333333;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
         
+        .btn-google {
+            background-color: #ffffff;
+            color: #333333;
+        }
+        
         .btn-google:hover {
             background-color: #f0f0f0;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .btn-signup {
@@ -76,11 +202,13 @@
         
         .btn-signup:hover {
             background-color: #e66f00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 126, 0, 0.3);
         }
         
         .divider {
             text-align: center;
-            margin: 20px 0;
+            margin: 25px 0;
             position: relative;
             color: #888888;
         }
@@ -101,6 +229,7 @@
             padding: 0 15px;
             position: relative;
             z-index: 2;
+            font-size: 14px;
         }
         
         .form-group {
@@ -109,12 +238,13 @@
         
         .form-input {
             width: 100%;
-            padding: 15px;
+            padding: 16px;
             background-color: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 6px;
+            border-radius: 8px;
             color: white;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
         
         .form-input::placeholder {
@@ -124,7 +254,8 @@
         .form-input:focus {
             outline: none;
             border-color: #ff7e00;
-            box-shadow: 0 0 0 2px rgba(255, 126, 0, 0.2);
+            box-shadow: 0 0 0 3px rgba(255, 126, 0, 0.2);
+            background-color: rgba(255, 255, 255, 0.15);
         }
         
         .password-container {
@@ -133,80 +264,207 @@
         
         .password-toggle {
             position: absolute;
-            right: 15px;
+            right: 16px;
             top: 50%;
             transform: translateY(-50%);
             color: rgba(255, 255, 255, 0.6);
             cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .password-toggle:hover {
+            color: #ff7e00;
         }
         
         .btn-login {
             background-color: #ff7e00;
             color: white;
             width: 100%;
-            padding: 15px;
-            margin-top: 10px;
+            padding: 16px;
+            margin-top: 15px;
+            font-size: 16px;
+            font-weight: 600;
         }
         
         .btn-login:hover {
             background-color: #e66f00;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 126, 0, 0.3);
         }
         
         .forgot-password {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
         }
         
         .forgot-password a {
             color: #ff7e00;
             text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
         }
         
         .forgot-password a:hover {
             text-decoration: underline;
+            color: #ff9e40;
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .logo i {
+            font-size: 40px;
+            color: #ff7e00;
+        }
+        
+        .error-message {
+            background-color: rgba(255, 59, 48, 0.1);
+            border-left: 3px solid #ff3b30;
+            color: #ff3b30;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message {
+            background-color: rgba(52, 199, 89, 0.1);
+            border-left: 3px solid #34c759;
+            color: #34c759;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+        }
+        
+        .loading i {
+            color: #ff7e00;
+            font-size: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            z-index: 1;
+        }
+        
+        /* মোবাইল রেসপন্সিভ ডিজাইন */
+        @media (max-width: 480px) {
+            .login-container {
+                width: 90%;
+                padding: 30px 20px;
+            }
+            
+            .login-title {
+                font-size: 24px;
+            }
+            
+            .btn {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .form-input {
+                padding: 14px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
+    <div class="bg-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    
     <div class="login-container">
+        <div class="logo">
+            <i class="fas fa-chart-line"></i>
+        </div>
+        
         <h2 class="login-title">Welcome Back</h2>
         
+        <div class="error-message" id="errorMessage">
+            ইমেল/মোবাইল বা পাসওয়ার্ড ভুল। আবার চেষ্টা করুন।
+        </div>
+        
+        <div class="success-message" id="successMessage">
+            লগইন সফল হয়েছে! রিডাইরেক্ট হচ্ছে...
+        </div>
+        
         <div class="social-login">
-            <button class="btn btn-google">
+            <button class="btn btn-google" id="googleSignIn">
                 <i class="fab fa-google"></i>
-                Sign in with Google
+                Google দিয়ে সাইন ইন করুন
             </button>
-            <button class="btn btn-signup">
-                Sign Up Free
+            <button class="btn btn-signup" id="signUp">
+                বিনামূল্যে সাইন আপ করুন
             </button>
         </div>
         
         <div class="divider">
-            <span>OR</span>
+            <span>অথবা</span>
         </div>
         
         <form id="loginForm">
             <div class="form-group">
-                <input type="text" class="form-input" placeholder="Enter your Email/Mobile" required>
+                <input type="text" class="form-input" id="emailMobile" placeholder="আপনার ইমেল/মোবাইল নম্বর দিন" required>
             </div>
             
             <div class="form-group">
                 <div class="password-container">
-                    <input type="password" class="form-input" id="password" placeholder="Password" required>
+                    <input type="password" class="form-input" id="password" placeholder="পাসওয়ার্ড" required>
                     <i class="fas fa-eye password-toggle" id="togglePassword"></i>
                 </div>
             </div>
             
-            <button type="submit" class="btn btn-login">Login →</button>
+            <div class="loading" id="loading">
+                <i class="fas fa-spinner"></i>
+            </div>
+            
+            <button type="submit" class="btn btn-login">লগইন →</button>
         </form>
         
         <div class="forgot-password">
-            <a href="#">Forgot Password?</a>
+            <a href="#" id="forgotPassword">পাসওয়ার্ড ভুলে গেছেন?</a>
         </div>
+    </div>
+    
+    <div class="footer">
+        © 2023 AI Option - Chain Analyser. সর্বস্বত্ব সংরক্ষিত।
     </div>
 
     <script>
-        // Toggle password visibility
+        // পাসওয়ার্ড দৃশ্যমানতা টগল
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('password');
         
@@ -214,28 +472,61 @@
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             
-            // Toggle the eye icon
+            // আইকন পরিবর্তন
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
         
-        // Form submission
+        // ফর্ম সাবমিশন
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            // Add your login logic here
-            alert('Login functionality would be implemented here');
+            
+            // ইনপুট মান পাওয়া
+            const emailMobile = document.getElementById('emailMobile').value;
+            const password = document.getElementById('password').value;
+            
+            // লোডিং দেখানো
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+            document.getElementById('successMessage').style.display = 'none';
+            
+            // সিমুলেটেড লগইন প্রক্রিয়া (এটি একটি ডেমো, বাস্তবে আপনার ব্যাকএন্ডের সাথে সংযোগ করতে হবে)
+            setTimeout(function() {
+                document.getElementById('loading').style.display = 'none';
+                
+                // সহজ ডেমো ভ্যালিডেশন
+                if (emailMobile === 'demo@example.com' && password === 'password123') {
+                    // সফল লগইন
+                    document.getElementById('successMessage').style.display = 'block';
+                    
+                    // ড্যাশবোর্ডে রিডাইরেক্ট (ডেমোতে এটি শুধু একটি অ্যালার্ট)
+                    setTimeout(function() {
+                        alert('লগইন সফল! ড্যাশবোর্ডে নেওয়া হচ্ছে...');
+                        // বাস্তবে: window.location.href = 'dashboard.html';
+                    }, 1500);
+                } else {
+                    // ব্যর্থ লগইন
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            }, 2000);
         });
         
-        // Google sign in
-        document.querySelector('.btn-google').addEventListener('click', function() {
-            // Add Google sign-in logic here
-            alert('Google sign-in would be implemented here');
+        // Google সাইন ইন
+        document.getElementById('googleSignIn').addEventListener('click', function() {
+            alert('Google সাইন ইন বাস্তবায়ন করা হবে। এটি OAuth 2.0 ব্যবহার করে করা যেতে পারে।');
         });
         
-        // Sign up
-        document.querySelector('.btn-signup').addEventListener('click', function() {
-            // Add sign-up logic here
-            alert('Sign-up functionality would be implemented here');
+        // সাইন আপ
+        document.getElementById('signUp').addEventListener('click', function() {
+            alert('রেজিস্ট্রেশন পেজে নেওয়া হচ্ছে...');
+            // বাস্তবে: window.location.href = 'signup.html';
+        });
+        
+        // পাসওয়ার্ড ভুলে গেছেন
+        document.getElementById('forgotPassword').addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('পাসওয়ার্ড রিসেট পেজে নেওয়া হচ্ছে...');
+            // বাস্তবে: window.location.href = 'forgot-password.html';
         });
     </script>
 </body>
