@@ -195,6 +195,17 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
+        .btn-facebook {
+            background-color: #1877f2;
+            color: white;
+        }
+        
+        .btn-facebook:hover {
+            background-color: #166fe5;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3);
+        }
+        
         .btn-signup {
             background-color: #ff7e00;
             color: white;
@@ -390,6 +401,61 @@
                 font-size: 14px;
             }
         }
+        
+        /* রেজিস্ট্রেশন মোডাল */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 24px;
+            color: #aaa;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #ff7e00;
+        }
+        
+        .modal-title {
+            color: #ffffff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
@@ -424,10 +490,14 @@
         <div class="social-login">
             <button class="btn btn-google" id="googleSignIn">
                 <i class="fab fa-google"></i>
-                Google signup direct
+                Google দিয়ে সাইন ইন করুন
+            </button>
+            <button class="btn btn-facebook" id="facebookSignIn">
+                <i class="fab fa-facebook-f"></i>
+                Facebook দিয়ে সাইন ইন করুন
             </button>
             <button class="btn btn-signup" id="signUp">
-                Free Sign-up 
+                বিনামূল্যে সাইন আপ করুন
             </button>
         </div>
         
@@ -463,6 +533,89 @@
         © 2023 AI Option - Chain Analyser. সর্বস্বত্ব সংরক্ষিত।
     </div>
 
+    <!-- রেজিস্ট্রেশন মোডাল -->
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2 class="modal-title">নতুন অ্যাকাউন্ট তৈরি করুন</h2>
+            
+            <div class="error-message" id="signupError">
+                রেজিস্ট্রেশনে সমস্যা হয়েছে। আবার চেষ্টা করুন।
+            </div>
+            
+            <div class="success-message" id="signupSuccess">
+                রেজিস্ট্রেশন সফল হয়েছে! লগইন করুন।
+            </div>
+            
+            <form id="signupForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="firstName" placeholder="নামের প্রথম অংশ" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-input" id="lastName" placeholder="নামের শেষ অংশ" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <input type="email" class="form-input" id="signupEmail" placeholder="ইমেল ঠিকানা" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="tel" class="form-input" id="signupMobile" placeholder="মোবাইল নম্বর">
+                </div>
+                
+                <div class="form-group">
+                    <div class="password-container">
+                        <input type="password" class="form-input" id="signupPassword" placeholder="পাসওয়ার্ড" required>
+                        <i class="fas fa-eye password-toggle" id="toggleSignupPassword"></i>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <div class="password-container">
+                        <input type="password" class="form-input" id="confirmPassword" placeholder="পাসওয়ার্ড নিশ্চিত করুন" required>
+                        <i class="fas fa-eye password-toggle" id="toggleConfirmPassword"></i>
+                    </div>
+                </div>
+                
+                <div class="loading" id="signupLoading">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                
+                <button type="submit" class="btn btn-login">অ্যাকাউন্ট তৈরি করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- পাসওয়ার্ড রিসেট মোডাল -->
+    <div id="resetModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeResetModal">&times;</span>
+            <h2 class="modal-title">পাসওয়ার্ড রিসেট</h2>
+            
+            <div class="error-message" id="resetError">
+                পাসওয়ার্ড রিসেটে সমস্যা হয়েছে। আবার চেষ্টা করুন।
+            </div>
+            
+            <div class="success-message" id="resetSuccess">
+                পাসওয়ার্ড রিসেট লিংক আপনার ইমেলে পাঠানো হয়েছে।
+            </div>
+            
+            <form id="resetForm">
+                <div class="form-group">
+                    <input type="email" class="form-input" id="resetEmail" placeholder="আপনার ইমেল ঠিকানা দিন" required>
+                </div>
+                
+                <div class="loading" id="resetLoading">
+                    <i class="fas fa-spinner"></i>
+                </div>
+                
+                <button type="submit" class="btn btn-login">রিসেট লিংক পাঠান</button>
+            </form>
+        </div>
+    </div>
+
     <script>
         // পাসওয়ার্ড দৃশ্যমানতা টগল
         const togglePassword = document.getElementById('togglePassword');
@@ -490,7 +643,7 @@
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('successMessage').style.display = 'none';
             
-            // সিমুলেটেড লগইন প্রক্রিয়া (এটি একটি ডেমো, বাস্তবে আপনার ব্যাকএন্ডের সাথে সংযোগ করতে হবে)
+            // সিমুলেটেড লগইন প্রক্রিয়া
             setTimeout(function() {
                 document.getElementById('loading').style.display = 'none';
                 
@@ -499,35 +652,14 @@
                     // সফল লগইন
                     document.getElementById('successMessage').style.display = 'block';
                     
-                    // ড্যাশবোর্ডে রিডাইরেক্ট (ডেমোতে এটি শুধু একটি অ্যালার্ট)
+                    // ইউজার ডেটা লোকাল স্টোরেজে সংরক্ষণ
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('user', JSON.stringify({
+                        email: emailMobile,
+                        name: 'Demo User'
+                    }));
+                    
+                    // ড্যাশবোর্ডে রিডাইরেক্ট
                     setTimeout(function() {
                         alert('লগইন সফল! ড্যাশবোর্ডে নেওয়া হচ্ছে...');
-                        // বাস্তবে: window.location.href = 'dashboard.html';
-                    }, 1500);
-                } else {
-                    // ব্যর্থ লগইন
-                    document.getElementById('errorMessage').style.display = 'block';
-                }
-            }, 2000);
-        });
-        
-        // Google সাইন ইন
-        document.getElementById('googleSignIn').addEventListener('click', function() {
-            alert('Google সাইন ইন বাস্তবায়ন করা হবে। এটি OAuth 2.0 ব্যবহার করে করা যেতে পারে।');
-        });
-        
-        // সাইন আপ
-        document.getElementById('signUp').addEventListener('click', function() {
-            alert('রেজিস্ট্রেশন পেজে নেওয়া হচ্ছে...');
-            // বাস্তবে: window.location.href = 'signup.html';
-        });
-        
-        // পাসওয়ার্ড ভুলে গেছেন
-        document.getElementById('forgotPassword').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('পাসওয়ার্ড রিসেট পেজে নেওয়া হচ্ছে...');
-            // বাস্তবে: window.location.href = 'forgot-password.html';
-        });
-    </script>
-</body>
-</html>
+                        // বাস্তবে: window.location.href = 'dashboard.ht
