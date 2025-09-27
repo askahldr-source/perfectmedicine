@@ -904,7 +904,7 @@
         // ফর্ম সাবমিশন
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            
+                        
             // ইনপুট মান পাওয়া
             const emailMobile = document.getElementById('emailMobile').value;
             const password = document.getElementById('password').value;
@@ -969,7 +969,7 @@
             const firstChar = userName.charAt(0).toUpperCase();
             document.getElementById('userAvatar').textContent = firstChar;
         }
-        
+                
         // লগইন পেজে ফিরে যাওয়ার ফাংশন
         function showLoginPage() {
             document.getElementById('dashboardPage').classList.remove('active');
@@ -997,8 +997,8 @@
             // ফর্ম ক্লিয়ার করা
             document.getElementById('loginForm').reset();
         });
-
-              // পেজ লোড হলে লগইন স্ট্যাটাস চেক করা
+        
+        // পেজ লোড হলে লগইন স্ট্যাটাস চেক করা
         window.addEventListener('load', function() {
             const isLoggedIn = localStorage.getItem('isLoggedIn');
             
@@ -1041,7 +1041,7 @@
         // পাসওয়ার্ড টগল - সাইনআপ
         const toggleSignupPassword = document.getElementById('toggleSignupPassword');
         const signupPasswordInput = document.getElementById('signupPassword');
-        
+                
         toggleSignupPassword.addEventListener('click', function() {
             const type = signupPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             signupPasswordInput.setAttribute('type', type);
@@ -1069,7 +1069,6 @@
             const email = document.getElementById('signupEmail').value;
             const mobile = document.getElementById('signupMobile').value;
             const password = document.getElementById('signupPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
             const confirmPassword = document.getElementById('confirmPassword').value;
             
             // পাসওয়ার্ড মিল আছে কিনা চেক
@@ -1107,7 +1106,7 @@
                 }, 2000);
             }, 2000);
         });
-        
+                
         // পাসওয়ার্ড রিসেট মোডাল
         const resetModal = document.getElementById('resetModal');
         const resetBtn = document.getElementById('forgotPassword');
@@ -1146,7 +1145,7 @@
                 }, 3000);
             }, 2000);
         });
-        
+
         // মোডাল বাইরে ক্লিক করলে বন্ধ হবে
         window.addEventListener('click', function(event) {
             if (event.target === signupModal) {
