@@ -456,6 +456,201 @@
         .form-row .form-group {
             flex: 1;
         }
+        
+        /* রিমেম্বার মি চেকবক্স */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .remember-me input {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        .remember-me label {
+            cursor: pointer;
+        }
+        
+        /* ইউজার মেনু */
+        .user-menu {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ff7e00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background-color: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            width: 180px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: none;
+            overflow: hidden;
+        }
+        
+        .dropdown-menu.active {
+            display: block;
+        }
+        
+        .dropdown-item {
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .dropdown-item:hover {
+            background-color: rgba(255, 126, 0, 0.2);
+        }
+        
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* ড্যাশবোর্ড পেজ */
+        .dashboard {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .dashboard.active {
+            display: block;
+        }
+        
+        .dashboard-header {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .dashboard-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .dashboard-logo i {
+            font-size: 28px;
+            color: #ff7e00;
+        }
+        
+        .dashboard-title {
+            font-size: 22px;
+            font-weight: 600;
+        }
+        
+        .dashboard-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .welcome-card {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #ff7e00;
+        }
+        
+        .welcome-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-card {
+            background-color: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stat-icon {
+            font-size: 24px;
+            color: #ff7e00;
+            margin-bottom: 15px;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+        
+        .logout-btn {
+            background-color: rgba(255, 59, 48, 0.2);
+            color: #ff3b30;
+            border: 1px solid #ff3b30;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background-color: rgba(255, 59, 48, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -472,7 +667,8 @@
         <span></span>
     </div>
     
-    <div class="login-container">
+    <!-- লগইন পেজ -->
+    <div id="loginPage" class="login-container">
         <div class="logo">
             <i class="fas fa-chart-line"></i>
         </div>
@@ -517,6 +713,11 @@
                 </div>
             </div>
             
+            <div class="remember-me">
+                <input type="checkbox" id="rememberMe">
+                <label for="rememberMe">আমাকে মনে রাখুন</label>
+            </div>
+            
             <div class="loading" id="loading">
                 <i class="fas fa-spinner"></i>
             </div>
@@ -529,10 +730,80 @@
         </div>
     </div>
     
-    <div class="footer">
-        © 2023 AI Option - Chain Analyser. সর্বস্বত্ব সংরক্ষিত।
+    <!-- ড্যাশবোর্ড পেজ -->
+    <div id="dashboardPage" class="dashboard">
+        <div class="dashboard-header">
+            <div class="dashboard-logo">
+                <i class="fas fa-chart-line"></i>
+                <div class="dashboard-title">AI Option - Chain Analyser</div>
+            </div>
+            
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        <span>প্রোফাইল</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-cog"></i>
+                        <span>সেটিংস</span>
+                    </a>
+                    <a href="#" class="dropdown-item">
+                        <i class="fas fa-question-circle"></i>
+                        <span>সাহায্য</span>
+                    </a>
+                    <a href="#" class="dropdown-item" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>লগআউট</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="welcome-card">
+                <h1 class="welcome-title">স্বাগতম, <span id="userName">ব্যবহারকারী</span>!</h1>
+                <p class="welcome-subtitle">AI Option - Chain Analyser-এ আপনার ড্যাশবোর্ডে স্বাগতম</p>
+                <p>আজকের তারিখ: <span id="currentDate"></span></p>
+            </div>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-value">24</div>
+                    <div class="stat-label">সক্রিয় চেইন</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-value">87%</div>
+                    <div class="stat-label">সাফল্যের হার</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                    <div class="stat-value">$1,245</div>
+                    <div class="stat-label">মোট আয়</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">রেফারেল</div>
+                </div>
+            </div>
+        </div>
     </div>
-
+    
     <!-- রেজিস্ট্রেশন মোডাল -->
     <div id="signupModal" class="modal">
         <div class="modal-content">
@@ -587,7 +858,7 @@
             </form>
         </div>
     </div>
-
+    
     <!-- পাসওয়ার্ড রিসেট মোডাল -->
     <div id="resetModal" class="modal">
         <div class="modal-content">
@@ -637,6 +908,7 @@
             // ইনপুট মান পাওয়া
             const emailMobile = document.getElementById('emailMobile').value;
             const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
             
             // লোডিং দেখানো
             document.getElementById('loading').style.display = 'block';
@@ -653,13 +925,244 @@
                     document.getElementById('successMessage').style.display = 'block';
                     
                     // ইউজার ডেটা লোকাল স্টোরেজে সংরক্ষণ
-                    localStorage.setItem('isLoggedIn', 'true');
-                    localStorage.setItem('user', JSON.stringify({
+                    const userData = {
                         email: emailMobile,
-                        name: 'Demo User'
-                    }));
+                        name: 'Demo User',
+                        rememberMe: rememberMe
+                    };
+                    
+                    localStorage.setItem('isLoggedIn', 'true');
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    
+                    // যদি রিমেম্বার মি চেক করা থাকে
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedUser', emailMobile);
+                    }
                     
                     // ড্যাশবোর্ডে রিডাইরেক্ট
                     setTimeout(function() {
-                        alert('লগইন সফল! ড্যাশবোর্ডে নেওয়া হচ্ছে...');
-                        // বাস্তবে: window.location.href = 'dashboard.ht
+                        showDashboard();
+                    }, 1500);
+                } else {
+                    // ব্যর্থ লগইন
+                    document.getElementById('errorMessage').style.display = 'block';
+                }
+            }, 2000);
+        });
+        
+        // ড্যাশবোর্ড দেখানোর ফাংশন
+        function showDashboard() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('dashboardPage').classList.add('active');
+            
+            // বর্তমান তারিখ সেট করা
+            const today = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('bn-BD', options);
+            
+            // ইউজার ডেটা পেতে
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const userName = userData.name || 'ব্যবহারকারী';
+            document.getElementById('userName').textContent = userName;
+            
+            // ইউজার অ্যাভাটারে প্রথম অক্ষর সেট করা
+            const firstChar = userName.charAt(0).toUpperCase();
+            document.getElementById('userAvatar').textContent = firstChar;
+        }
+        
+        // লগইন পেজে ফিরে যাওয়ার ফাংশন
+        function showLoginPage() {
+            document.getElementById('dashboardPage').classList.remove('active');
+            document.getElementById('loginPage').style.display = 'block';
+        }
+        
+        // ইউজার মেনু টগল
+        const userAvatar = document.getElementById('userAvatar');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        
+        userAvatar.addEventListener('click', function() {
+            dropdownMenu.classList.toggle('active');
+        });
+        
+        // লগআউট বাটন
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            // লোকাল স্টোরেজ থেকে লগইন ডেটা মুছে ফেলা
+            localStorage.removeItem('isLoggedIn');
+            
+            // লগইন পেজে ফিরে যাওয়া
+            showLoginPage();
+            
+            // ফর্ম ক্লিয়ার করা
+            document.getElementById('loginForm').reset();
+        });
+
+              // পেজ লোড হলে লগইন স্ট্যাটাস চেক করা
+        window.addEventListener('load', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            
+            if (isLoggedIn === 'true') {
+                // রিমেম্বার মি চেক করা হয়েছে কিনা
+                const rememberedUser = localStorage.getItem('rememberedUser');
+                if (rememberedUser) {
+                    document.getElementById('emailMobile').value = rememberedUser;
+                    document.getElementById('rememberMe').checked = true;
+                }
+                
+                // ড্যাশবোর্ড দেখানো
+                showDashboard();
+            }
+        });
+        
+        // Google সাইন ইন
+        document.getElementById('googleSignIn').addEventListener('click', function() {
+            alert('Google OAuth 2.0 বাস্তবায়নের জন্য আপনার Google Cloud Console-এ একটি প্রজেক্ট তৈরি করুন এবং OAuth 2.0 ক্লায়েন্ট আইডি পান।');
+        });
+        
+        // Facebook সাইন ইন
+        document.getElementById('facebookSignIn').addEventListener('click', function() {
+            alert('Facebook OAuth 2.0 বাস্তবায়নের জন্য আপনার Facebook Developers-এ একটি অ্যাপ তৈরি করুন এবং OAuth 2.0 অ্যাপ আইডি পান।');
+        });
+        
+        // সাইন আপ মোডাল
+        const signupModal = document.getElementById('signupModal');
+        const signupBtn = document.getElementById('signUp');
+        const closeSignupModal = document.getElementById('closeModal');
+        
+        signupBtn.addEventListener('click', function() {
+            signupModal.style.display = 'flex';
+        });
+        
+        closeSignupModal.addEventListener('click', function() {
+            signupModal.style.display = 'none';
+        });
+        
+        // পাসওয়ার্ড টগল - সাইনআপ
+        const toggleSignupPassword = document.getElementById('toggleSignupPassword');
+        const signupPasswordInput = document.getElementById('signupPassword');
+        
+        toggleSignupPassword.addEventListener('click', function() {
+            const type = signupPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            signupPasswordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // কনফার্ম পাসওয়ার্ড টগল
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+        
+        // সাইনআপ ফর্ম সাবমিশন
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('signupEmail').value;
+            const mobile = document.getElementById('signupMobile').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // পাসওয়ার্ড মিল আছে কিনা চেক
+            if (password !== confirmPassword) {
+                document.getElementById('signupError').textContent = 'পাসওয়ার্ড দুটি মেলে না। আবার চেষ্টা করুন।';
+                document.getElementById('signupError').style.display = 'block';
+                return;
+            }
+            
+            // লোডিং দেখানো
+            document.getElementById('signupLoading').style.display = 'block';
+            document.getElementById('signupError').style.display = 'none';
+            document.getElementById('signupSuccess').style.display = 'none';
+            
+            // সিমুলেটেড সাইনআপ প্রক্রিয়া
+            setTimeout(function() {
+                document.getElementById('signupLoading').style.display = 'none';
+                
+                // সফল সাইনআপ
+                document.getElementById('signupSuccess').style.display = 'block';
+                
+                // ইউজার ডেটা লোকাল স্টোরেজে সংরক্ষণ
+                localStorage.setItem('user', JSON.stringify({
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    mobile: mobile
+                }));
+                
+                // মোডাল বন্ধ করা
+                setTimeout(function() {
+                    signupModal.style.display = 'none';
+                    // লগইন ফর্মে ইমেল পূরণ করা
+                    document.getElementById('emailMobile').value = email;
+                }, 2000);
+            }, 2000);
+        });
+        
+        // পাসওয়ার্ড রিসেট মোডাল
+        const resetModal = document.getElementById('resetModal');
+        const resetBtn = document.getElementById('forgotPassword');
+        const closeResetModal = document.getElementById('closeResetModal');
+        
+        resetBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            resetModal.style.display = 'flex';
+        });
+        
+        closeResetModal.addEventListener('click', function() {
+            resetModal.style.display = 'none';
+        });
+        
+        // রিসেট ফর্ম সাবমিশন
+        document.getElementById('resetForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('resetEmail').value;
+            
+            // লোডিং দেখানো
+            document.getElementById('resetLoading').style.display = 'block';
+            document.getElementById('resetError').style.display = 'none';
+            document.getElementById('resetSuccess').style.display = 'none';
+            
+            // সিমুলেটেড রিসেট প্রক্রিয়া
+            setTimeout(function() {
+                document.getElementById('resetLoading').style.display = 'none';
+                
+                // সফল রিসেট
+                document.getElementById('resetSuccess').style.display = 'block';
+                
+                // মোডাল বন্ধ করা
+                setTimeout(function() {
+                    resetModal.style.display = 'none';
+                }, 3000);
+            }, 2000);
+        });
+        
+        // মোডাল বাইরে ক্লিক করলে বন্ধ হবে
+        window.addEventListener('click', function(event) {
+            if (event.target === signupModal) {
+                signupModal.style.display = 'none';
+            }
+            if (event.target === resetModal) {
+                resetModal.style.display = 'none';
+            }
+        });
+        
+        // ড্যাশবোর্ড বাইরে ক্লিক করলে ড্রপডাউন মেনু বন্ধ হবে
+        window.addEventListener('click', function(event) {
+            if (!userAvatar.contains(event.target) && !dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
