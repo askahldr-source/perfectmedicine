@@ -10,7 +10,7 @@
             font-family: 'Segoe UI', Arial, sans-serif;
         }
         .container {
-            max-width: 1100px;
+            max-width: 1200px;
             margin: 40px auto;
             background: #fff;
             border-radius: 18px;
@@ -19,7 +19,7 @@
         }
         h1 {
             text-align: center;
-            color: #a12e2e;
+            color: #442ea1;
             margin-bottom: 32px;
             font-size: 2.3em;
             letter-spacing: 1.5px;
@@ -73,6 +73,16 @@
             font-weight: bold;
             font-size: 1.08em;
         }
+        .volume-highest {
+            background: #2e77d0 !important;
+            color: #fff !important;
+            font-weight: bold;
+        }
+        .volume-second {
+            background: #ffe066 !important;
+            color: #333 !important;
+            font-weight: bold;
+        }
         .reversal {
             background: #dfebff;
             color: #2053a6;
@@ -98,7 +108,7 @@
 <body>
     <div class="container">
         <h1>Amrito Option Chain</h1>
-        <table class="option-table">
+        <table class="option-table" id="option-table">
             <tr>
                 <th colspan="5" class="call-head">CALL SIDE</th>
                 <th class="strike-head">STRIKE</th>
@@ -117,75 +127,63 @@
                 <th class="put-head">Chg</th>
                 <th class="put-head">TV</th>
             </tr>
-            <!-- Example rows (replace with live data as needed) -->
-            <tr>
-                <td class="call-cell">8.20</td>
-                <td class="call-cell">0.12%</td>
-                <td class="call-cell">190</td>
-                <td class="call-cell">420</td>
-                <td class="reversal">23800.0</td>
-                <td class="strike">23600</td>
-                <td class="put-reversal">23400.0</td>
-                <td class="put-cell">500</td>
-                <td class="put-cell">210</td>
-                <td class="put-cell">0.09%</td>
-                <td class="put-cell">8.02</td>
-            </tr>
-            <tr>
-                <td class="call-cell">8.87</td>
-                <td class="call-cell">0.15%</td>
-                <td class="call-cell">220</td>
-                <td class="call-cell">540</td>
-                <td class="reversal">23900.0</td>
-                <td class="strike">23700</td>
-                <td class="put-reversal">23500.0</td>
-                <td class="put-cell">510</td>
-                <td class="put-cell">230</td>
-                <td class="put-cell">0.11%</td>
-                <td class="put-cell">8.14</td>
-            </tr>
-            <!-- ... Continue for each strike price from 23600 to 25600 ... -->
-            <tr>
-                <td class="call-cell">9.15</td>
-                <td class="call-cell">0.02%</td>
-                <td class="call-cell">26</td>
-                <td class="call-cell">37</td>
-                <td class="reversal">24600.0</td>
-                <td class="strike">24600</td>
-                <td class="put-reversal">24600.0</td>
-                <td class="put-cell">23958</td>
-                <td class="put-cell">10410</td>
-                <td class="put-cell">4.95%</td>
-                <td class="put-cell">11.42</td>
-            </tr>
-            <tr>
-                <td class="call-cell">10.77</td>
-                <td class="call-cell">0.20%</td>
-                <td class="call-cell">260</td>
-                <td class="call-cell">690</td>
-                <td class="reversal">25400.0</td>
-                <td class="strike">25400</td>
-                <td class="put-reversal">25200.0</td>
-                <td class="put-cell">880</td>
-                <td class="put-cell">330</td>
-                <td class="put-cell">0.15%</td>
-                <td class="put-cell">9.90</td>
-            </tr>
-            <tr>
-                <td class="call-cell">11.15</td>
-                <td class="call-cell">0.25%</td>
-                <td class="call-cell">280</td>
-                <td class="call-cell">750</td>
-                <td class="reversal">25500.0</td>
-                <td class="strike">25500</td>
-                <td class="put-reversal">25300.0</td>
-                <td class="put-cell">900</td>
-                <td class="put-cell">350</td>
-                <td class="put-cell">0.16%</td>
-                <td class="put-cell">10.05</td>
-            </tr>
         </table>
-        <p style="text-align:center;color:#999;margin-top:24px;">Showing data from spot 24600: 23600 to 25600</p>
+        <p style="text-align:center;color:#999;margin-top:24px;">
+            Strike price: 21000 to 28000, step 50.<br>
+            Highest volume: blue, second highest: yellow (call & put side independent).
+        </p>
     </div>
+    <script>
+        // Generate mock data for demonstration (random for now)
+        const startStrike = 21000, endStrike = 28000, step = 50;
+        let data = [];
+        for(let strike = startStrike; strike <= endStrike; strike += step) {
+            data.push({
+                strike: strike,
+                callTV: (Math.random()*10+7).toFixed(2),
+                callChg: (Math.random()*2-1).toFixed(2) + '%',
+                callOI: Math.floor(Math.random()*20000+100),
+                callVolume: Math.floor(Math.random()*10000+100),
+                callRev: (strike + 50).toFixed(1),
+                putRev: (strike - 50).toFixed(1),
+                putVolume: Math.floor(Math.random()*10000+100),
+                putOI: Math.floor(Math.random()*20000+100),
+                putChg: (Math.random()*2-1).toFixed(2) + '%',
+                putTV: (Math.random()*10+7).toFixed(2)
+            });
+        }
+
+        // Calculate highest & second highest volume for calls and puts
+        function getIndicesForVolumes(arr, key) {
+            let vols = arr.map(row => row[key]);
+            let sorted = [...vols].sort((a,b)=>b-a);
+            let highest = sorted[0], second = sorted[1];
+            let highestIdx = vols.indexOf(highest);
+            let secondIdx = vols.indexOf(second);
+            return {highestIdx, secondIdx};
+        }
+        let callVolIdx = getIndicesForVolumes(data, 'callVolume');
+        let putVolIdx = getIndicesForVolumes(data, 'putVolume');
+
+        // Render table rows
+        const table = document.getElementById('option-table');
+        data.forEach((row, idx) => {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="call-cell">${row.callTV}</td>
+                <td class="call-cell">${row.callChg}</td>
+                <td class="call-cell">${row.callOI}</td>
+                <td class="call-cell ${idx === callVolIdx.highestIdx ? 'volume-highest' : idx === callVolIdx.secondIdx ? 'volume-second' : ''}">${row.callVolume}</td>
+                <td class="reversal">${row.callRev}</td>
+                <td class="strike">${row.strike}</td>
+                <td class="put-reversal">${row.putRev}</td>
+                <td class="put-cell ${idx === putVolIdx.highestIdx ? 'volume-highest' : idx === putVolIdx.secondIdx ? 'volume-second' : ''}">${row.putVolume}</td>
+                <td class="put-cell">${row.putOI}</td>
+                <td class="put-cell">${row.putChg}</td>
+                <td class="put-cell">${row.putTV}</td>
+            `;
+            table.appendChild(tr);
+        });
+    </script>
 </body>
 </html>
