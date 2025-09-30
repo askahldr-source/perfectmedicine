@@ -11,42 +11,70 @@
             margin: 0;
         }
         .container {
-            max-width: 1240px;
-            margin: 40px auto;
+            max-width: 540px;
+            margin: 60px auto 0 auto;
             background: #fff;
             border-radius: 18px;
-            box-shadow: 0 6px 24px rgba(60,60,120,0.11);
+            box-shadow: 0 6px 24px rgba(60,60,120,0.10);
             padding: 36px 24px 24px 24px;
         }
         h1 {
             text-align: center;
             color: #442ea1;
-            margin-bottom: 20px;
-            font-size: 2.3em;
-            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            font-size: 2em;
+            letter-spacing: 1.2px;
             font-weight: 700;
         }
         .spot-label {
             text-align: center;
-            font-size: 1.4em;
+            font-size: 1.25em;
             color: #1e7fa7;
             font-weight: bold;
-            margin-bottom: 26px;
+            margin-bottom: 22px;
             letter-spacing: 1px;
+        }
+        .dropdown-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .dropdown-label {
+            font-size: 1em;
+            font-weight: 500;
+            margin-right: 12px;
+            color: #222;
+        }
+        select {
+            font-size: 1.04em;
+            padding: 8px 30px 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #b7c7d9;
+            box-shadow: 0 1px 8px #f0f4ff;
+            background: #f7fafc url('data:image/svg+xml;utf8,<svg fill="gray" height="16" viewBox="0 0 20 20" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M5.516 7.548a1 1 0 0 1 1.415-.04L10 10.293l3.07-2.784a1 1 0 0 1 1.376 1.45l-3.75 3.4a1 1 0 0 1-1.312 0l-3.75-3.4a1 1 0 0 1-.04-1.415z"/></svg>') no-repeat right 10px center/18px 18px;
+            appearance: none;
+            cursor: pointer;
+            transition: border .2s;
+        }
+        select:focus {
+            border: 1.5px solid #1e7fa7;
+            outline: none;
         }
         .option-table {
             width: 100%;
             border-collapse: separate;
             border-spacing: 0;
             background: #fafafa;
-            border-radius: 18px;
+            border-radius: 14px;
             overflow: hidden;
+            margin-bottom: 18px;
+            box-shadow: 0 2px 12px #eee;
         }
         .option-table th, .option-table td {
-            padding: 12px 10px;
+            padding: 10px 6px;
             text-align: center;
             font-size: 1.08em;
-            transition: background 0.2s;
         }
         .option-table th {
             background: #e7e7e7;
@@ -57,11 +85,13 @@
             background: linear-gradient(90deg, #c5f5d8 0%, #e1fbe6 100%);
             color: #238e39;
             font-weight: bold;
+            border-radius: 8px 0 0 0;
         }
         .put-head {
             background: linear-gradient(270deg, #ffd1d6 0%, #fbe6ea 100%);
             color: #ae2828;
             font-weight: bold;
+            border-radius: 0 8px 0 0;
         }
         .strike-head {
             background: #ffc055;
@@ -69,11 +99,11 @@
             font-weight: bold;
         }
         .call-cell {
-            background: linear-gradient(90deg, #e8ffef 0%, #e4f7ea 100%);
+            background: #e8ffef;
             color: #238e39;
         }
         .put-cell {
-            background: linear-gradient(270deg, #ffeaea 0%, #fbe6ea 100%);
+            background: #ffeaea;
             color: #ae2828;
         }
         .strike {
@@ -106,9 +136,6 @@
             font-style: italic;
             font-size: 0.97em;
         }
-        .option-table tr:hover td {
-            background: #f6f4fd;
-        }
         /* Spot price row highlight & horizontal line */
         .spot-row td {
             background: #e3f3ff !important;
@@ -122,22 +149,25 @@
             left: 0; right: 0; top: 50%;
             height: 4px;
             background: #1e7fa7;
-            opacity: 0.4;
+            opacity: 0.6;
             z-index: 2;
         }
-        @media (max-width: 900px) {
-            .container { padding: 8px; }
+        @media (max-width: 600px) {
+            .container { max-width: 99vw; padding: 4px; }
+            h1 { font-size: 1.2em; }
+            .spot-label { font-size: 1em; }
             .option-table th, .option-table td { padding: 6px 2px; font-size: 0.94em; }
-            h1 { font-size: 1.5em; }
-            .spot-label { font-size: 1.1em; }
+            select { font-size: .98em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Amrito Option Chain</h1>
-        <div class="spot-label">
-            Spot Price: <span id="spot-price-label"></span>
+        <div class="spot-label" id="spot-price-label"></div>
+        <div class="dropdown-row">
+            <span class="dropdown-label">Select Strike Price:</span>
+            <select id="strikeDropdown"></select>
         </div>
         <table class="option-table" id="option-table">
             <tr>
@@ -159,15 +189,12 @@
                 <th class="put-head">TV</th>
             </tr>
         </table>
-        <p style="text-align:center;color:#999;margin-top:24px;">
-            Strike price: 21000 to 28000, step 50.<br>
-            Highest volume: blue, second highest: yellow (call & put side independently).
-        </p>
     </div>
     <script>
         // Set your spot price here!
         const spotPrice = 24600;
-        document.getElementById("spot-price-label").textContent = spotPrice;
+        document.getElementById("spot-price-label").innerHTML = 
+            `Spot Price: <span style="color:#0072c8;">${spotPrice}</span>`;
 
         // Generate mock data for demonstration (random for now)
         const startStrike = 21000, endStrike = 28000, step = 50;
@@ -188,38 +215,66 @@
             });
         }
 
-        // Calculate highest & second highest volume for calls and puts
-        function getIndicesForVolumes(arr, key) {
-            let vols = arr.map(row => row[key]);
-            let sorted = [...vols].sort((a,b)=>b-a);
-            let highest = sorted[0], second = sorted[1];
-            let highestIdx = vols.indexOf(highest);
-            let secondIdx = vols.indexOf(second);
-            return {highestIdx, secondIdx};
-        }
-        let callVolIdx = getIndicesForVolumes(data, 'callVolume');
-        let putVolIdx = getIndicesForVolumes(data, 'putVolume');
+        // Fill dropdown
+        const dropdown = document.getElementById("strikeDropdown");
+        data.forEach(row => {
+            let option = document.createElement('option');
+            option.value = row.strike;
+            option.text = row.strike;
+            dropdown.appendChild(option);
+        });
 
-        // Render table rows
-        const table = document.getElementById('option-table');
-        data.forEach((row, idx) => {
+        // Render table row for a given strike
+        function renderTable(strikeToShow) {
+            // Remove old rows except header
+            const table = document.getElementById('option-table');
+            // Remove all rows except first two (header rows)
+            while(table.rows.length > 2) table.deleteRow(2);
+
+            let idx = data.findIndex(row => row.strike == strikeToShow);
+            if(idx === -1) return;
+            let row = data[idx];
+
+            // Compare volumes for this row only
+            let callVolumeClass = "";
+            let putVolumeClass = "";
+            if(row.callVolume > row.putVolume) {
+                callVolumeClass = "volume-highest";
+                putVolumeClass = "volume-second";
+            } else if(row.callVolume < row.putVolume) {
+                putVolumeClass = "volume-highest";
+                callVolumeClass = "volume-second";
+            } else {
+                callVolumeClass = "volume-highest";
+                putVolumeClass = "volume-highest";
+            }
+
             let tr = document.createElement('tr');
-            // Spot price row highlight
+            // Spot price row highlight if matches
             if(row.strike === spotPrice) tr.className = 'spot-row';
             tr.innerHTML = `
                 <td class="call-cell">${row.callTV}</td>
                 <td class="call-cell">${row.callChg}</td>
                 <td class="call-cell">${row.callOI}</td>
-                <td class="call-cell ${idx === callVolIdx.highestIdx ? 'volume-highest' : idx === callVolIdx.secondIdx ? 'volume-second' : ''}">${row.callVolume}</td>
+                <td class="call-cell ${callVolumeClass}">${row.callVolume}</td>
                 <td class="reversal">${row.callRev}</td>
                 <td class="strike">${row.strike}</td>
                 <td class="put-reversal">${row.putRev}</td>
-                <td class="put-cell ${idx === putVolIdx.highestIdx ? 'volume-highest' : idx === putVolIdx.secondIdx ? 'volume-second' : ''}">${row.putVolume}</td>
+                <td class="put-cell ${putVolumeClass}">${row.putVolume}</td>
                 <td class="put-cell">${row.putOI}</td>
                 <td class="put-cell">${row.putChg}</td>
                 <td class="put-cell">${row.putTV}</td>
             `;
             table.appendChild(tr);
+        }
+
+        // On page load: show spot price row only
+        dropdown.value = spotPrice;
+        renderTable(spotPrice);
+
+        // On dropdown change: show selected row
+        dropdown.addEventListener("change", function() {
+            renderTable(Number(dropdown.value));
         });
     </script>
 </body>
