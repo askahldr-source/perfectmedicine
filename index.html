@@ -8,22 +8,31 @@
         body {
             background: linear-gradient(120deg, #eaf8fa 0%, #f8eaf5 100%);
             font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
         }
         .container {
-            max-width: 1200px;
+            max-width: 1240px;
             margin: 40px auto;
             background: #fff;
             border-radius: 18px;
             box-shadow: 0 6px 24px rgba(60,60,120,0.11);
-            padding: 28px;
+            padding: 36px 24px 24px 24px;
         }
         h1 {
             text-align: center;
             color: #442ea1;
-            margin-bottom: 32px;
+            margin-bottom: 20px;
             font-size: 2.3em;
             letter-spacing: 1.5px;
             font-weight: 700;
+        }
+        .spot-label {
+            text-align: center;
+            font-size: 1.4em;
+            color: #1e7fa7;
+            font-weight: bold;
+            margin-bottom: 26px;
+            letter-spacing: 1px;
         }
         .option-table {
             width: 100%;
@@ -34,7 +43,7 @@
             overflow: hidden;
         }
         .option-table th, .option-table td {
-            padding: 10px 8px;
+            padding: 12px 10px;
             text-align: center;
             font-size: 1.08em;
             transition: background 0.2s;
@@ -72,6 +81,8 @@
             color: #fff;
             font-weight: bold;
             font-size: 1.08em;
+            position: relative;
+            z-index: 1;
         }
         .volume-highest {
             background: #2e77d0 !important;
@@ -98,16 +109,36 @@
         .option-table tr:hover td {
             background: #f6f4fd;
         }
+        /* Spot price row highlight & horizontal line */
+        .spot-row td {
+            background: #e3f3ff !important;
+            box-shadow: 0 -2px 0 0 #1e7fa7 inset;
+            position: relative;
+        }
+        .spot-row td.strike:before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0; right: 0; top: 50%;
+            height: 4px;
+            background: #1e7fa7;
+            opacity: 0.4;
+            z-index: 2;
+        }
         @media (max-width: 900px) {
             .container { padding: 8px; }
-            .option-table th, .option-table td { padding: 7px 3px; font-size: 0.95em; }
+            .option-table th, .option-table td { padding: 6px 2px; font-size: 0.94em; }
             h1 { font-size: 1.5em; }
+            .spot-label { font-size: 1.1em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Amrito Option Chain</h1>
+        <div class="spot-label">
+            Spot Price: <span id="spot-price-label"></span>
+        </div>
         <table class="option-table" id="option-table">
             <tr>
                 <th colspan="5" class="call-head">CALL SIDE</th>
@@ -130,10 +161,14 @@
         </table>
         <p style="text-align:center;color:#999;margin-top:24px;">
             Strike price: 21000 to 28000, step 50.<br>
-            Highest volume: blue, second highest: yellow (call & put side independent).
+            Highest volume: blue, second highest: yellow (call & put side independently).
         </p>
     </div>
     <script>
+        // Set your spot price here!
+        const spotPrice = 24600;
+        document.getElementById("spot-price-label").textContent = spotPrice;
+
         // Generate mock data for demonstration (random for now)
         const startStrike = 21000, endStrike = 28000, step = 50;
         let data = [];
@@ -169,6 +204,8 @@
         const table = document.getElementById('option-table');
         data.forEach((row, idx) => {
             let tr = document.createElement('tr');
+            // Spot price row highlight
+            if(row.strike === spotPrice) tr.className = 'spot-row';
             tr.innerHTML = `
                 <td class="call-cell">${row.callTV}</td>
                 <td class="call-cell">${row.callChg}</td>
