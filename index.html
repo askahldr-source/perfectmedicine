@@ -1,82 +1,191 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PerfectAnalyst - LTP Calculator @mrito</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <title>Amrito Option Chain</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { padding: 20px; font-family: Arial; background-color: #f7f9fc; }
-        .highlight { background-color: #fffa65; font-weight: bold; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-        .container { max-width: 600px; margin: auto; }
-        input { margin-right: 10px; }
+        body {
+            background: linear-gradient(120deg, #eaf8fa 0%, #f8eaf5 100%);
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 6px 24px rgba(60,60,120,0.11);
+            padding: 28px;
+        }
+        h1 {
+            text-align: center;
+            color: #a12e2e;
+            margin-bottom: 32px;
+            font-size: 2.3em;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+        }
+        .option-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fafafa;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+        .option-table th, .option-table td {
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 1.08em;
+            transition: background 0.2s;
+        }
+        .option-table th {
+            background: #e7e7e7;
+            font-weight: bold;
+            border-bottom: 2px solid #ccc;
+        }
+        .call-head {
+            background: linear-gradient(90deg, #c5f5d8 0%, #e1fbe6 100%);
+            color: #238e39;
+            font-weight: bold;
+        }
+        .put-head {
+            background: linear-gradient(270deg, #ffd1d6 0%, #fbe6ea 100%);
+            color: #ae2828;
+            font-weight: bold;
+        }
+        .strike-head {
+            background: #ffc055;
+            color: #fff;
+            font-weight: bold;
+        }
+        .call-cell {
+            background: linear-gradient(90deg, #e8ffef 0%, #e4f7ea 100%);
+            color: #238e39;
+        }
+        .put-cell {
+            background: linear-gradient(270deg, #ffeaea 0%, #fbe6ea 100%);
+            color: #ae2828;
+        }
+        .strike {
+            background: #ffb300;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.08em;
+        }
+        .reversal {
+            background: #dfebff;
+            color: #2053a6;
+            font-style: italic;
+            font-size: 0.97em;
+        }
+        .put-reversal {
+            background: #ffe2eb;
+            color: #ae2828;
+            font-style: italic;
+            font-size: 0.97em;
+        }
+        .option-table tr:hover td {
+            background: #f6f4fd;
+        }
+        @media (max-width: 900px) {
+            .container { padding: 8px; }
+            .option-table th, .option-table td { padding: 7px 3px; font-size: 0.95em; }
+            h1 { font-size: 1.5em; }
+        }
     </style>
 </head>
 <body>
-<div class="container">
-    <h2>Signup - PerfectAnalyst @mrito</h2>
-    <div id="signupDiv">
-        Phone: <input type="text" id="phone" placeholder="Enter phone">
-        <button class="btn btn-primary btn-sm" onclick="sendOTP()">Send OTP</button>
+    <div class="container">
+        <h1>Amrito Option Chain</h1>
+        <table class="option-table">
+            <tr>
+                <th colspan="5" class="call-head">CALL SIDE</th>
+                <th class="strike-head">STRIKE</th>
+                <th colspan="5" class="put-head">PUT SIDE</th>
+            </tr>
+            <tr>
+                <th class="call-head">TV</th>
+                <th class="call-head">Chg</th>
+                <th class="call-head">OI</th>
+                <th class="call-head">Volume</th>
+                <th class="call-head">Reversal Price</th>
+                <th class="strike-head">ATM/STRIKE</th>
+                <th class="put-head">Reversal Price</th>
+                <th class="put-head">Volume</th>
+                <th class="put-head">OI</th>
+                <th class="put-head">Chg</th>
+                <th class="put-head">TV</th>
+            </tr>
+            <!-- Example rows (replace with live data as needed) -->
+            <tr>
+                <td class="call-cell">8.20</td>
+                <td class="call-cell">0.12%</td>
+                <td class="call-cell">190</td>
+                <td class="call-cell">420</td>
+                <td class="reversal">23800.0</td>
+                <td class="strike">23600</td>
+                <td class="put-reversal">23400.0</td>
+                <td class="put-cell">500</td>
+                <td class="put-cell">210</td>
+                <td class="put-cell">0.09%</td>
+                <td class="put-cell">8.02</td>
+            </tr>
+            <tr>
+                <td class="call-cell">8.87</td>
+                <td class="call-cell">0.15%</td>
+                <td class="call-cell">220</td>
+                <td class="call-cell">540</td>
+                <td class="reversal">23900.0</td>
+                <td class="strike">23700</td>
+                <td class="put-reversal">23500.0</td>
+                <td class="put-cell">510</td>
+                <td class="put-cell">230</td>
+                <td class="put-cell">0.11%</td>
+                <td class="put-cell">8.14</td>
+            </tr>
+            <!-- ... Continue for each strike price from 23600 to 25600 ... -->
+            <tr>
+                <td class="call-cell">9.15</td>
+                <td class="call-cell">0.02%</td>
+                <td class="call-cell">26</td>
+                <td class="call-cell">37</td>
+                <td class="reversal">24600.0</td>
+                <td class="strike">24600</td>
+                <td class="put-reversal">24600.0</td>
+                <td class="put-cell">23958</td>
+                <td class="put-cell">10410</td>
+                <td class="put-cell">4.95%</td>
+                <td class="put-cell">11.42</td>
+            </tr>
+            <tr>
+                <td class="call-cell">10.77</td>
+                <td class="call-cell">0.20%</td>
+                <td class="call-cell">260</td>
+                <td class="call-cell">690</td>
+                <td class="reversal">25400.0</td>
+                <td class="strike">25400</td>
+                <td class="put-reversal">25200.0</td>
+                <td class="put-cell">880</td>
+                <td class="put-cell">330</td>
+                <td class="put-cell">0.15%</td>
+                <td class="put-cell">9.90</td>
+            </tr>
+            <tr>
+                <td class="call-cell">11.15</td>
+                <td class="call-cell">0.25%</td>
+                <td class="call-cell">280</td>
+                <td class="call-cell">750</td>
+                <td class="reversal">25500.0</td>
+                <td class="strike">25500</td>
+                <td class="put-reversal">25300.0</td>
+                <td class="put-cell">900</td>
+                <td class="put-cell">350</td>
+                <td class="put-cell">0.16%</td>
+                <td class="put-cell">10.05</td>
+            </tr>
+        </table>
+        <p style="text-align:center;color:#999;margin-top:24px;">Showing data from spot 24600: 23600 to 25600</p>
     </div>
-
-    <div id="verifyDiv" style="display:none; margin-top:20px;">
-        Enter OTP: <input type="text" id="otpInput">
-        <button class="btn btn-success btn-sm" onclick="verifyOTP()">Verify OTP</button>
-    </div>
-
-    <div id="optionChainDiv" style="display:none; margin-top:30px;">
-        <h2>Option Chain Top Volume</h2>
-        <table class="table table-striped" id="optionTable"></table>
-    </div>
-</div>
-
-<script>
-// Simulate OTP
-let otpStore = {};
-
-function sendOTP() {
-    let phone = document.getElementById("phone").value;
-    if(!phone) { alert("Enter phone!"); return; }
-    let otp = Math.floor(1000 + Math.random()*9000);
-    otpStore[phone] = otp;
-    alert("OTP for demo: " + otp);
-    localStorage.setItem("currentPhone", phone);
-    document.getElementById("signupDiv").style.display = "none";
-    document.getElementById("verifyDiv").style.display = "block";
-}
-
-function verifyOTP() {
-    let phone = localStorage.getItem("currentPhone");
-    let entered = document.getElementById("otpInput").value;
-    if(entered == otpStore[phone]) {
-        alert("OTP Verified!");
-        document.getElementById("verifyDiv").style.display = "none";
-        document.getElementById("optionChainDiv").style.display = "block";
-        loadOptionChain();
-    } else {
-        alert("Wrong OTP!");
-    }
-}
-
-// Simulated Option Chain Data
-function loadOptionChain() {
-    let data = [
-        {strike: "18000", volume: 1500},
-        {strike: "18050", volume: 3000},
-        {strike: "18100", volume: 2500},
-        {strike: "18150", volume: 4000},
-        {strike: "18200", volume: 2000}
-    ];
-    let table = document.getElementById("optionTable");
-    let html = "<tr><th>Strike</th><th>Volume</th></tr>";
-    let maxVol = Math.max(...data.map(d=>d.volume));
-    data.forEach(row => {
-        let highlight = row.volume === maxVol ? "highlight" : "";
-        html += `<tr class="${highlight}"><td>${row.strike}</td><td>${row.volume}</td></tr>`;
-    });
-    table.innerHTML = html;
-}
-</script>
 </body>
 </html>
