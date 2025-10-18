@@ -553,3 +553,219 @@
 </script>
 </body>
 </html>
+/*
+Paste this <script>...</script> block at the end of your index.html (just before </body>).
+It is self-contained and will attach to the existing controls (ids: ticker, expiry, side, source,
+interval, start, stop, refresh, status, jsonHint, updatedAt, and the table tbody).
+It polls either the repo JSON (data/<TICKER>_all.json) or the local API (/api/optionchain)
+and updates the table live.
+
+Usage:
+- Add this block to index.html (before </body>).
+- Click "Start" to auto-update every N seconds (from the Interval field).
+- Click "Refresh" to fetch once immediately.
+- Select Source = "GitHub" to read data from data/<TICKER>_all.json (requires the file in the repo).
+- Select Source = "API" to query /api/optionchain on the same origin.
+*/
+(function(){
+  // avoid collisions with other scripts by using a unique prefix
+  const P = 'pm2_';
+
+  // helpers
+  function $id(id){ return document.getElementById(id); }
+  function fmt(x, d=4){
+    if (x === null || x === undefined || x === '') return '';
+    if (typeof x === 'number') {
+      if (!isFinite(x)) return String(x);
+      return (Math.abs(x) >= 1000 || Math.abs(x) < 0.0001) ? x.toPrecision(4) : x.toFixed(d);
+    }
+    if (!isNaN(Number(x))) return Number(x).toFixed(d);
+    return String(x);
+  }
+
+  function githubJsonUrl(owner, repo, ticker){
+    return `https://raw.githubusercontent.com/${owner}/${repo}/main/data/${ticker}_all.json`;
+  }
+
+  // read DOM elements (safe guards)
+  const owner = 'askahldr-source';
+  const repo = 'perfectmedicine';
+  const tickerEl = $id('ticker');
+  const expiryEl = $id('expiry');
+  const sideEl = $id('side');
+  const sourceEl = $id('source');
+  const intervalEl = $id('interval');
+  const statusEl = $id('status');
+  const startBtn = $id('start');
+  const stopBtn = $id('stop');
+  const refreshBtn = $id('refresh');
+  const tbody = document.querySelector('#opts tbody');
+  const updatedAtEl = $id('updatedAt');
+  const jsonHintEl = $id('jsonHint');
+
+  let timer = null;
+
+  function setStatus(txt, isError){
+    if (!statusEl) return;
+    statusEl.textContent = txt;
+    statusEl.className = isError ? 'error' : '';
+  }
+
+  function renderTableRows(rows){
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (!Array.isArray(rows) || rows.length === 0) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 16;
+      td.className = 'left';
+      td.textContent = 'No option rows found';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+      return;
+    }
+
+    const expiryFilter = (expiryEl && expiryEl.value) ? expiryEl.value.trim().toLowerCase() : '';
+    const sideFilter = (sideEl && sideEl.value) ? sideEl.value.toLowerCase() : 'both';
+
+    let filtered = rows.slice();
+
+    if (expiryFilter && expiryFilter !== 'all') {
+      filtered = filtered.filter(r => (r.expiry || '').toLowerCase() === expiryFilter);
+    }
+    if (sideFilter === 'calls') filtered = filtered.filter(r => (r.type || '').toLowerCase().startsWith('c'));
+    if (sideFilter === 'puts') filtered = filtered.filter(r => (r.type || '').toLowerCase().startsWith('p'));
+
+    filtered.sort((a,b)=>{
+      if ((a.expiry||'') !== (b.expiry||'')) return (a.expiry||'').localeCompare(b.expiry||'');
+      if ((a.type||'') !== (b.type||'')) return (a.type||'').localeCompare(b.type||'');
+      return (Number(a.strike)||0) - (Number(b.strike)||0);
+    });
+
+    const maxRows = 500;
+    const slice = filtered.slice(0, maxRows);
+
+    for (const r of slice) {
+      const tr = document.createElement('tr');
+      function mk(tdVal, cls){
+        const td = document.createElement('td');
+        if (cls) td.className = cls;
+        td.textContent = (tdVal === null || tdVal === undefined) ? '' : (typeof tdVal === 'number' ? fmt(tdVal,4) : String(tdVal));
+        return td;
+      }
+      tr.appendChild(mk(r.expiry));
+      tr.appendChild(mk(r.type));
+      tr.appendChild(mk(r.strike));
+      tr.appendChild(mk(r.bid));
+      tr.appendChild(mk(r.ask));
+      tr.appendChild(mk(r.mid));
+      tr.appendChild(mk(r.impliedVol));
+      tr.appendChild(mk(r.vol_used));
+      tr.appendChild(mk(r.days));
+      tr.appendChild(mk(r.delta));
+      tr.appendChild(mk(r.gamma));
+      tr.appendChild(mk(r.vega));
+      tr.appendChild(mk(r.theta));
+      tr.appendChild(mk(r.openInterest));
+      tr.appendChild(mk(r.volume));
+      tr.appendChild(mk(r.contract, 'left'));
+      tbody.appendChild(tr);
+    }
+
+    if (filtered.length > maxRows) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 16;
+      td.className = 'small muted left';
+      td.textContent = `Showing first ${maxRows} of ${filtered.length} rows (use filters to narrow).`;
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+  }
+
+  async function fetchFromGitHub(ticker){
+    const url = githubJsonUrl(owner, repo, ticker);
+    if (jsonHintEl) jsonHintEl.textContent = url;
+    setStatus('Fetching GitHub JSON...');
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
+      const j = await resp.json();
+      const rows = j.rows || j.data || j;
+      const updated_at = j.updated_at_utc || j.updated_at || j.updatedAt || null;
+      if (updated_at && updatedAtEl) updatedAtEl.textContent = (new Date(updated_at)).toLocaleString();
+      else if (updatedAtEl) updatedAtEl.textContent = '-';
+      renderTableRows(Array.isArray(rows) ? rows : []);
+      setStatus(`Loaded ${Array.isArray(rows)?rows.length:0} rows`);
+    } catch (err) {
+      renderTableRows([]);
+      setStatus('GitHub fetch error: ' + err.message, true);
+    }
+  }
+
+  async function fetchFromAPI(ticker){
+    const expiry = expiryEl ? expiryEl.value || 'all' : 'all';
+    const side = sideEl ? sideEl.value || 'both' : 'both';
+    const url = `/api/optionchain?ticker=${encodeURIComponent(ticker)}&expiry=${encodeURIComponent(expiry)}&side=${encodeURIComponent(side)}`;
+    if (jsonHintEl) jsonHintEl.textContent = url;
+    setStatus('Fetching local API...');
+    try {
+      const resp = await fetch(url, { cache: 'no-store' });
+      if (!resp.ok) {
+        const errObj = await resp.json().catch(()=>({error:resp.statusText}));
+        throw new Error(errObj.error || `${resp.status} ${resp.statusText}`);
+      }
+      const j = await resp.json();
+      if (!j.ok) throw new Error(j.error || 'API returned error');
+      const rows = j.data || [];
+      if (updatedAtEl) updatedAtEl.textContent = new Date().toLocaleString();
+      renderTableRows(rows);
+      setStatus(`Loaded ${rows.length} rows`);
+    } catch (err) {
+      renderTableRows([]);
+      setStatus('API fetch error: ' + err.message, true);
+    }
+  }
+
+  async function doFetch(){
+    const ticker = (tickerEl && tickerEl.value) ? tickerEl.value.trim().toUpperCase() : 'AAPL';
+    if (!ticker) { setStatus('Ticker required', true); return; }
+    const src = (sourceEl && sourceEl.value) ? sourceEl.value : 'github';
+    if (src === 'github') await fetchFromGitHub(ticker);
+    else await fetchFromAPI(ticker);
+  }
+
+  function startAuto(){
+    if (timer) return;
+    const sec = parseInt(intervalEl ? intervalEl.value : '60', 10) || 60;
+    if (sec < 5) { alert('Interval should be >= 5 seconds'); return; }
+    startBtn && (startBtn.disabled = true);
+    stopBtn && (stopBtn.disabled = false);
+    doFetch();
+    timer = setInterval(doFetch, sec * 1000);
+    setStatus(`Auto-updating every ${sec}s`);
+  }
+
+  function stopAuto(){
+    if (timer) {
+      clearInterval(timer);
+      timer = null;
+    }
+    startBtn && (startBtn.disabled = false);
+    stopBtn && (stopBtn.disabled = true);
+    setStatus('stopped');
+  }
+
+  // attach events if controls present
+  if (refreshBtn) refreshBtn.addEventListener('click', doFetch);
+  if (startBtn) startBtn.addEventListener('click', startAuto);
+  if (stopBtn) stopBtn.addEventListener('click', stopAuto);
+
+  // initial quick fetch (do not auto-start timer)
+  setTimeout(doFetch, 200);
+
+  // expose for console debugging
+  window.pm2_reloadOptionChain = doFetch;
+  window.pm2_startAuto = startAuto;
+  window.pm2_stopAuto = stopAuto;
+})();
