@@ -2,291 +2,369 @@
 <html lang="bn">
 <head>
   <meta charset="utf-8" />
-  <title>PerfectMedicine — Option Chain (Auto)</title>
+  <title>PerfectMedicine — Option Chain Dashboard</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Chart.js for the right-side chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+
   <style>
-    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin: 18px; color:#111; }
-    h1 { margin: 0 0 10px 0; font-size:20px; }
-    .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-bottom:12px; }
-    input[type="text"], select { padding:6px 8px; font-size:14px; border:1px solid #ccc; border-radius:4px; }
-    button { padding:6px 10px; font-size:14px; border-radius:4px; border:1px solid #2b6cb0; background:#3182ce; color:white; cursor:pointer; }
-    button[disabled] { opacity:0.6; cursor:default; }
-    #status { font-size:13px; color:#444; margin-left:6px; }
-    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
-    th, td { padding:6px 8px; border:1px solid #e6e6e6; text-align:right; }
-    th { background:#fafafa; text-align:center; font-weight:600; position:sticky; top:0; z-index:1; }
-    td.left { text-align:left; font-family:monospace; }
-    .muted { color:#666; font-size:12px; }
-    .small { font-size:12px; color:#666; }
-    .highlight { background: #fffbe6; }
-    #note { margin-top:8px; color:#555; font-size:13px; }
-    .error { color:#a00; }
-    @media (max-width:900px) {
-      table { font-size:12px; }
-      th,td { padding:4px 6px; }
+    :root{
+      --accent:#ff7a00;
+      --accent-dark:#e66800;
+      --green:#17a673;
+      --muted:#666;
+      --sidebar-bg:#162029;
+      --page-bg:#f5f6f7;
+      --card-bg:#ffffff;
     }
+    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--page-bg);color:#111}
+    /* Top marquee ticker */
+    .top-ticker{
+      background:#0f1720;color:#fff;padding:6px 12px;display:flex;align-items:center;gap:12px;overflow:hidden;
+    }
+    .ticker-strip{white-space:nowrap;display:inline-block;animation:scroll 28s linear infinite}
+    .ticker-item{display:inline-block;margin-right:34px;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,0.03)}
+    @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+    /* Layout */
+    .wrap{display:flex;height:calc(100vh - 44px)} /* minus top ticker */
+    .sidebar{
+      width:62px;background:var(--sidebar-bg);color:#fff;padding:12px 8px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;
+    }
+    .sidebar .icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:transparent;cursor:pointer}
+    .sidebar .icon:hover{background:rgba(255,255,255,0.05)}
+    .sidebar .logo{font-weight:700;color:var(--accent);font-size:14px;margin-bottom:6px}
+
+    .main{
+      flex:1;padding:12px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
+    }
+
+    /* Top controls card */
+    .controls{
+      background:var(--card-bg);padding:14px;border-radius:6px;display:flex;gap:10px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,0.06);
+    }
+    .controls select,.controls input{padding:8px;border:1px solid #e3e7ea;border-radius:4px}
+    .controls button{padding:8px 12px;border-radius:4px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+    .status-pill{background:#dff6e9;color:#0b7a4a;padding:6px 10px;border-radius:6px;font-weight:600}
+
+    /* Content columns */
+    .content{
+      display:flex;gap:12px;flex:1;min-height:0; /* allow children to scroll */
+    }
+
+    .left-pane{
+      flex:1;background:var(--card-bg);border-radius:6px;padding:8px;box-sizing:border-box;overflow:auto;display:flex;flex-direction:column;
+    }
+    .right-pane{
+      width:420px;min-width:320px;background:var(--card-bg);border-radius:6px;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;
+    }
+
+    /* Option chain table */
+    .table-wrap{overflow:auto;flex:1;border-radius:6px}
+    table.opt-table{width:100%;border-collapse:collapse;font-size:13px}
+    table.opt-table thead th{position:sticky;top:0;background:#f8fafc;padding:8px;border-bottom:1px solid #e6edf2;text-align:center}
+    table.opt-table tbody td{padding:7px;border-bottom:1px solid #f0f3f5;text-align:right}
+    table.opt-table tbody tr:nth-child(even){background:rgba(0,0,0,0.01)}
+    td.leftCol{text-align:left;font-family:monospace}
+    .strike-cell{background:linear-gradient(180deg,#ff9d4d,#ff8000);color:#fff;border-radius:4px;font-weight:700}
+    .highlight{background:#fffbe6}
+    .iv-up{color:#0b7a4a;font-weight:700}
+    .iv-down{color:#a00;font-weight:700}
+
+    /* Right chart area */
+    .chart-box{flex:1;display:flex;flex-direction:column;gap:6px}
+    .chart-canvas{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:4px;border:1px solid #eee;padding:6px}
+    .legend{display:flex;gap:8px;align-items:center;font-size:13px}
+
+    /* Footer hint */
+    .footer-note{font-size:12px;color:var(--muted);margin-top:8px}
+
+    /* Responsive */
+    @media (max-width:1000px){
+      .content{flex-direction:column}
+      .right-pane{width:100%;min-width:0}
+    }
+
   </style>
 </head>
 <body>
-  <h1>Option Chain — Auto / GitHub data</h1>
-
-  <div class="controls">
-    <label>Ticker: <input id="ticker" type="text" value="AAPL" style="width:90px" /></label>
-    <label>Expiry: <input id="expiry" type="text" placeholder="YYYY-MM-DD or all" value="all" style="width:120px" /></label>
-    <label>Side:
-      <select id="side">
-        <option value="both">both</option>
-        <option value="calls">calls</option>
-        <option value="puts">puts</option>
-      </select>
-    </label>
-
-    <label>Source:
-      <select id="source">
-        <option value="github">GitHub JSON (data/&lt;TICKER&gt;_all.json)</option>
-        <option value="api">Local API (/api/optionchain)</option>
-      </select>
-    </label>
-
-    <label>Auto interval (sec):
-      <input id="interval" type="text" value="60" style="width:70px" />
-    </label>
-
-    <button id="start">Start</button>
-    <button id="stop" disabled>Stop</button>
-    <button id="refresh">Refresh</button>
-
-    <span id="status">idle</span>
+  <!-- top ticker -->
+  <div class="top-ticker">
+    <div style="font-weight:700;padding:4px 8px;background:var(--accent);border-radius:6px">National Stock Exchange Option Chain</div>
+    <div style="flex:1;overflow:hidden">
+      <div class="ticker-strip" aria-hidden="true">
+        <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span>
+        <span class="ticker-item">TATAELXSI 1689.6 ▼0.30%</span>
+        <span class="ticker-item">EICHERMOT 7042.5 ▲0.79%</span>
+        <span class="ticker-item">TATACONSUM 1166 ▲1.45%</span>
+        <span class="ticker-item">HDFCBANK 1500 ▲0.22%</span>
+        <span class="ticker-item">RELIANCE 2540.9 ▲0.12%</span>
+        <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span> <!-- repeated to smooth scroll -->
+      </div>
+    </div>
+    <div style="min-width:180px;text-align:right;color:#fff;font-size:13px">Spot : <strong style="color:#bff3b8">25709.85</strong></div>
   </div>
 
-  <div id="note" class="small">
-    Tip: For the GitHub JSON source you need data/&lt;TICKER&gt;_all.json in this repository (created by GitHub Actions). The JSON location used:
-    <span id="jsonHint" class="muted"></span>
+  <div class="wrap">
+    <!-- left sidebar -->
+    <div class="sidebar" title="menu">
+      <div class="logo">AiLTP</div>
+      <div class="icon" title="Dashboard">🏠</div>
+      <div class="icon" title="OptionChain">📊</div>
+      <div class="icon" title="Reports">📁</div>
+      <div class="icon" title="Tracker">📈</div>
+      <div class="icon" title="Learn">🎓</div>
+      <div style="flex:1"></div>
+      <div class="icon" style="background:#0b7a4a" title="Support">☎️</div>
+    </div>
+
+    <div class="main">
+      <!-- controls -->
+      <div class="controls">
+        <label>Index:
+          <select id="tickerSelect">
+            <option value="NIFTY">NIFTY</option>
+            <option value="BANKNIFTY">BANKNIFTY</option>
+            <option value="FINNIFTY">FINNIFTY</option>
+          </select>
+        </label>
+
+        <label>Expiry:
+          <select id="expirySelect">
+            <option value="all">All</option>
+            <option value="2025-10-30">2025-10-30</option>
+            <option value="2025-11-07">2025-11-07</option>
+          </select>
+        </label>
+
+        <div style="flex:1"></div>
+
+        <div class="status-pill" id="marketStatus">NIFTY IS IN BULL RUN</div>
+      </div>
+
+      <div class="content">
+        <!-- left: option chain table -->
+        <div class="left-pane">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <strong>Option Chain</strong>
+            <div style="flex:1"></div>
+            <button id="refreshBtn">Refresh</button>
+            <button id="startBtn">Auto</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="opt-table" aria-describedby="Option chain table">
+              <thead>
+                <tr>
+                  <th>OI Chg</th><th>OI</th><th>VOLUME</th><th>S-REVERSAL</th>
+                  <th class="leftCol">ATM ▾ STRIKE</th>
+                  <th>S-REVERSAL</th><th>VOLUME</th><th>OI</th><th>OI Chg</th>
+                </tr>
+              </thead>
+              <tbody id="optBody">
+                <!-- rows injected by JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="footer-note">Tip: click "Auto" to enable periodic updates (uses repo JSON if available, else sample data)</div>
+        </div>
+
+        <!-- right: chart -->
+        <div class="right-pane">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <strong>Price Chart</strong>
+            <div class="legend">
+              <div style="color:var(--green);font-weight:700">S Risky</div>
+              <div style="color:#999">|</div>
+              <div style="color:#333">5 min</div>
+            </div>
+          </div>
+          <div class="chart-box">
+            <div class="chart-canvas">
+              <canvas id="priceChart" height="320"></canvas>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:space-between;margin-top:6px">
+              <div><small class="muted">Max Gain: 25821.6</small></div>
+              <div><small class="muted">Max Pain: 25466.1</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
-  <table id="opts" aria-live="polite">
-    <thead>
-      <tr>
-        <th>Expiry</th><th>Type</th><th>Strike</th><th>Bid</th><th>Ask</th><th>Mid</th>
-        <th>IV</th><th>VolUsed</th><th>Days</th><th>Delta</th><th>Gamma</th><th>Vega</th><th>Theta</th><th>OI</th><th>Vol</th><th class="left">Contract</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <div id="footer" class="small muted" style="margin-top:10px">
-    Last json updated at: <span id="updatedAt">-</span>
-  </div>
-
-<!-- Live updater script: paste this into the end of your existing index.html (it replaces the inline fetch logic) -->
 <script>
 /*
-This script attaches to the existing controls in the page and auto-updates the option chain
-table from either:
- - GitHub JSON: https://raw.githubusercontent.com/askahldr-source/perfectmedicine/main/data/<TICKER>_all.json
- - Local API: /api/optionchain?ticker=...
-Usage:
- - Click "Refresh" to fetch once.
- - Click "Start" to auto-poll every N seconds (Interval).
- - Choose Source (github or api).
+Integrated option-chain + live updater script.
+Behavior:
+- Tries to fetch JSON from repo: /data/<TICKER>_all.json (raw.githubusercontent)
+- If not found, uses local sample data to render table & chart
+- You can paste this full index.html into your repo to replace existing page.
 */
-(function(){
-  const owner = 'askahldr-source';
-  const repo = 'perfectmedicine';
 
-  function $id(id){ return document.getElementById(id); }
-  function fmt(x, d=4){
-    if (x === null || x === undefined || x === '') return '';
-    if (typeof x === 'number') {
-      if (!isFinite(x)) return String(x);
-      return (Math.abs(x) >= 1000 || Math.abs(x) < 0.0001) ? x.toPrecision(4) : x.toFixed(d);
-    }
-    if (!isNaN(Number(x))) return Number(x).toFixed(d);
-    return String(x);
-  }
-
-  function githubJsonUrl(ticker){
-    return `https://raw.githubusercontent.com/${owner}/${repo}/main/data/${ticker}_all.json`;
-  }
-
-  const tickerEl = $id('ticker');
-  const expiryEl = $id('expiry');
-  const sideEl = $id('side');
-  const sourceEl = $id('source');
-  const intervalEl = $id('interval');
-  const statusEl = $id('status');
-  const startBtn = $id('start');
-  const stopBtn = $id('stop');
-  const refreshBtn = $id('refresh');
-  const tbody = document.querySelector('#opts tbody');
-  const updatedAtEl = $id('updatedAt');
-  const jsonHintEl = $id('jsonHint');
-
-  let timer = null;
-
-  function setStatus(txt, isError){
-    if (!statusEl) return;
-    statusEl.textContent = txt;
-    statusEl.className = isError ? 'error' : '';
-  }
-
-  function renderTableRows(rows){
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    if (!Array.isArray(rows) || rows.length === 0) {
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
-      td.colSpan = 16;
-      td.className = 'left';
-      td.textContent = 'No option rows found';
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-      return;
-    }
-
-    const expiryFilter = (expiryEl && expiryEl.value) ? expiryEl.value.trim().toLowerCase() : '';
-    const sideFilter = (sideEl && sideEl.value) ? sideEl.value.toLowerCase() : 'both';
-
-    let filtered = rows.slice();
-
-    if (expiryFilter && expiryFilter !== 'all') {
-      filtered = filtered.filter(r => (r.expiry || '').toLowerCase() === expiryFilter);
-    }
-    if (sideFilter === 'calls') filtered = filtered.filter(r => (r.type || '').toLowerCase().startsWith('c'));
-    if (sideFilter === 'puts') filtered = filtered.filter(r => (r.type || '').toLowerCase().startsWith('p'));
-
-    filtered.sort((a,b)=>{
-      if ((a.expiry||'') !== (b.expiry||'')) return (a.expiry||'').localeCompare(b.expiry||'');
-      if ((a.type||'') !== (b.type||'')) return (a.type||'').localeCompare(b.type||'');
-      return (Number(a.strike)||0) - (Number(b.strike)||0);
+/* ---------- sample fallback data (keeps UI working if JSON missing) ---------- */
+const sampleRows = (() => {
+  const strikes = [25450,25500,25550,25600,25650,25700,25750,25800,25850,25900,25950,26000];
+  const rows = [];
+  for (let i=0;i<strikes.length;i++){
+    const k=strikes[i];
+    rows.push({
+      expiry: '2025-10-30',
+      type: i<6 ? 'put' : 'call',
+      strike: k,
+      bid: (Math.random()*60).toFixed(2),
+      ask: (Math.random()*80+20).toFixed(2),
+      mid: (Math.random()*70+10).toFixed(2),
+      impliedVol: (Math.random()*0.45+0.12).toFixed(4),
+      vol_used: (Math.random()*0.45+0.12).toFixed(4),
+      days: 12,
+      delta: (Math.random()*2-1).toFixed(4),
+      gamma: (Math.random()*0.05).toFixed(5),
+      vega: (Math.random()*10).toFixed(3),
+      theta: (-Math.random()*5).toFixed(3),
+      openInterest: Math.floor(Math.random()*900000),
+      volume: Math.floor(Math.random()*200000),
+      oiChange: (Math.random()*10000-5000).toFixed(0),
+      contract: 'OPT' + k
     });
-
-    const maxRows = 500;
-    const slice = filtered.slice(0, maxRows);
-
-    for (const r of slice) {
-      const tr = document.createElement('tr');
-      function mk(tdVal, cls){
-        const td = document.createElement('td');
-        if (cls) td.className = cls;
-        td.textContent = (tdVal === null || tdVal === undefined) ? '' : (typeof tdVal === 'number' ? fmt(tdVal,4) : String(tdVal));
-        return td;
-      }
-      tr.appendChild(mk(r.expiry));
-      tr.appendChild(mk(r.type));
-      tr.appendChild(mk(r.strike));
-      tr.appendChild(mk(r.bid));
-      tr.appendChild(mk(r.ask));
-      tr.appendChild(mk(r.mid));
-      tr.appendChild(mk(r.impliedVol));
-      tr.appendChild(mk(r.vol_used));
-      tr.appendChild(mk(r.days));
-      tr.appendChild(mk(r.delta));
-      tr.appendChild(mk(r.gamma));
-      tr.appendChild(mk(r.vega));
-      tr.appendChild(mk(r.theta));
-      tr.appendChild(mk(r.openInterest));
-      tr.appendChild(mk(r.volume));
-      tr.appendChild(mk(r.contract, 'left'));
-      tbody.appendChild(tr);
-    }
-
-    if (filtered.length > maxRows) {
-      const tr = document.createElement('tr');
-      const td = document.createElement('td');
-      td.colSpan = 16;
-      td.className = 'small muted left';
-      td.textContent = `Showing first ${maxRows} of ${filtered.length} rows (use filters to narrow).`;
-      tr.appendChild(td);
-      tbody.appendChild(tr);
-    }
   }
-
-  async function fetchFromGitHub(ticker){
-    const url = githubJsonUrl(ticker);
-    if (jsonHintEl) jsonHintEl.textContent = url;
-    setStatus('Fetching GitHub JSON...');
-    try {
-      const resp = await fetch(url, { cache: 'no-store' });
-      if (!resp.ok) throw new Error(`HTTP ${resp.status} ${resp.statusText}`);
-      const j = await resp.json();
-      const rows = j.rows || j.data || j;
-      const updated_at = j.updated_at_utc || j.updated_at || j.updatedAt || null;
-      if (updated_at && updatedAtEl) updatedAtEl.textContent = (new Date(updated_at)).toLocaleString();
-      else if (updatedAtEl) updatedAtEl.textContent = '-';
-      renderTableRows(Array.isArray(rows) ? rows : []);
-      setStatus(`Loaded ${Array.isArray(rows)?rows.length:0} rows`);
-    } catch (err) {
-      renderTableRows([]);
-      setStatus('GitHub fetch error: ' + err.message, true);
-    }
-  }
-
-  async function fetchFromAPI(ticker){
-    const expiry = expiryEl ? expiryEl.value || 'all' : 'all';
-    const side = sideEl ? sideEl.value || 'both' : 'both';
-    const url = `/api/optionchain?ticker=${encodeURIComponent(ticker)}&expiry=${encodeURIComponent(expiry)}&side=${encodeURIComponent(side)}`;
-    if (jsonHintEl) jsonHintEl.textContent = url;
-    setStatus('Fetching local API...');
-    try {
-      const resp = await fetch(url, { cache: 'no-store' });
-      if (!resp.ok) {
-        const errObj = await resp.json().catch(()=>({error:resp.statusText}));
-        throw new Error(errObj.error || `${resp.status} ${resp.statusText}`);
-      }
-      const j = await resp.json();
-      if (!j.ok) throw new Error(j.error || 'API returned error');
-      const rows = j.data || [];
-      if (updatedAtEl) updatedAtEl.textContent = new Date().toLocaleString();
-      renderTableRows(rows);
-      setStatus(`Loaded ${rows.length} rows`);
-    } catch (err) {
-      renderTableRows([]);
-      setStatus('API fetch error: ' + err.message, true);
-    }
-  }
-
-  async function doFetch(){
-    const ticker = (tickerEl && tickerEl.value) ? tickerEl.value.trim().toUpperCase() : 'AAPL';
-    if (!ticker) { setStatus('Ticker required', true); return; }
-    const src = (sourceEl && sourceEl.value) ? sourceEl.value : 'github';
-    if (src === 'github') await fetchFromGitHub(ticker);
-    else await fetchFromAPI(ticker);
-  }
-
-  function startAuto(){
-    if (timer) return;
-    const sec = parseInt(intervalEl ? intervalEl.value : '60', 10) || 60;
-    if (sec < 5) { alert('Interval should be >= 5 seconds'); return; }
-    startBtn && (startBtn.disabled = true);
-    stopBtn && (stopBtn.disabled = false);
-    doFetch();
-    timer = setInterval(doFetch, sec * 1000);
-    setStatus(`Auto-updating every ${sec}s`);
-  }
-
-  function stopAuto(){
-    if (timer) {
-      clearInterval(timer);
-      timer = null;
-    }
-    startBtn && (startBtn.disabled = false);
-    stopBtn && (stopBtn.disabled = true);
-    setStatus('stopped');
-  }
-
-  if (refreshBtn) refreshBtn.addEventListener('click', doFetch);
-  if (startBtn) startBtn.addEventListener('click', startAuto);
-  if (stopBtn) stopBtn.addEventListener('click', stopAuto);
-
-  // quick initial fetch (no auto-start)
-  setTimeout(doFetch, 200);
-
-  window.pm2_reloadOptionChain = doFetch;
-  window.pm2_startAuto = startAuto;
-  window.pm2_stopAuto = stopAuto;
+  return rows;
 })();
-</script>
 
+/* ---------- rendering functions ---------- */
+function renderOptionTable(rows){
+  const tbody = document.getElementById('optBody');
+  tbody.innerHTML = '';
+  if (!rows || rows.length===0){
+    tbody.innerHTML = '<tr><td colspan="9" class="leftCol">No option data</td></tr>';
+    return;
+  }
+
+  // split and mirror like in screenshot: left OI/vol columns, center strike, right OI/vol columns
+  // We'll show symmetric rows around ATM (approx center)
+  rows.sort((a,b)=>a.strike - b.strike);
+
+  for (let i=0;i<rows.length;i++){
+    const r = rows[i];
+    const tr = document.createElement('tr');
+
+    // left block: OI Chg | OI | Volume | s-reversal
+    const leftHtml = `<td>${r.oiChange}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.volume.toLocaleString()}</td><td class="leftCol">${r.type==='call' ? '' : 'Break Out'}</td>`;
+    // center strike cell (highlight ATM approx)
+    const strikeCell = `<td class="strike-cell leftCol">${r.strike.toFixed ? r.strike.toFixed(0) : r.strike}</td>`;
+    // right block similar
+    const rightHtml = `<td class="leftCol">${r.type==='call' ? 'Break Down' : ''}</td><td>${r.volume.toLocaleString()}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.oiChange}</td>`;
+
+    tr.innerHTML = leftHtml + strikeCell + rightHtml;
+    tbody.appendChild(tr);
+  }
+}
+
+/* ---------- chart (line) ---------- */
+let priceChart = null;
+function initChart(){
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  priceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Price',
+        data: [],
+        borderColor: '#2b8cff',
+        backgroundColor: 'rgba(43,140,255,0.06)',
+        tension: 0.15,
+        pointRadius: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { display: true, grid: { color: '#f3f6f8' } },
+        y: { display: true, grid: { color: '#f3f6f8' } }
+      }
+    }
+  });
+}
+
+function updateChartWithSample(){
+  if (!priceChart) return;
+  const now = Date.now();
+  const labels = [];
+  const data = [];
+  for (let i=30;i>=0;i--){
+    labels.push(new Date(now - i*5*60*1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+    data.push(25650 + Math.sin(i/3)*80 + (Math.random()-0.5)*40);
+  }
+  priceChart.data.labels = labels;
+  priceChart.data.datasets[0].data = data;
+  priceChart.update();
+}
+
+/* ---------- fetch repo JSON if available (raw.githubusercontent) ---------- */
+async function fetchRepoJson(ticker='AAPL'){
+  const url = `https://raw.githubusercontent.com/askahldr-source/perfectmedicine/main/data/${ticker}_all.json`;
+  try {
+    const resp = await fetch(url, {cache:'no-store'});
+    if (!resp.ok) throw new Error('No repo json');
+    const j = await resp.json();
+    // j.rows expected (or j.data)
+    return j.rows || j.data || j;
+  } catch (err){
+    console.warn('repo json not available:', err);
+    return null;
+  }
+}
+
+/* ---------- orchestrator: load & render ---------- */
+let autoTimer = null;
+async function loadAndRender(){
+  const ticker = (document.getElementById('tickerSelect').value||'NIFTY');
+  // try repo json first
+  const repoRows = await fetchRepoJson(ticker);
+  if (repoRows && Array.isArray(repoRows) && repoRows.length>0){
+    renderOptionTable(repoRows);
+  } else {
+    renderOptionTable(sampleRows);
+  }
+  updateChartWithSample();
+  document.getElementById('refreshBtn').textContent = 'Refresh';
+}
+
+/* ---------- controls ---------- */
+document.getElementById('refreshBtn').addEventListener('click', async function(){
+  this.textContent = 'Loading...';
+  await loadAndRender();
+});
+
+document.getElementById('startBtn').addEventListener('click', function(){
+  if (autoTimer){
+    clearInterval(autoTimer);
+    autoTimer = null;
+    this.textContent = 'Auto';
+    setStatus('Auto stopped');
+  } else {
+    autoTimer = setInterval(loadAndRender, 60*1000); // every 60s
+    this.textContent = 'Stop Auto';
+    setStatus('Auto updating every 60s');
+  }
+});
+
+/* ---------- status helper ---------- */
+function setStatus(txt){
+  const el = document.getElementById('marketStatus');
+  if (el) el.textContent = txt;
+}
+
+/* ---------- init ---------- */
+window.addEventListener('DOMContentLoaded', function(){
+  initChart();
+  loadAndRender();
+});
+</script>
 </body>
 </html>
