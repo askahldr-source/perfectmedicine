@@ -71,6 +71,17 @@
     .iv-up{color:#0b7a4a;font-weight:700}
     .iv-down{color:#a00;font-weight:700}
 
+    /* ATM horizontal highlight: band across the table row */
+    table.opt-table tbody tr.atm-row td{
+      background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,245,200,0.95) 10%, rgba(255,245,200,0.95) 90%, rgba(255,255,255,0) 100%);
+      /* keep cell borders visible but soften them */
+    }
+    /* emphasize the strike cell within the ATM row */
+    table.opt-table tbody tr.atm-row td.strike-cell{
+      box-shadow: 0 0 0 3px rgba(246,143,31,0.12) inset, 0 0 0 2px var(--accent-dark);
+      color: #fff;
+    }
+
     /* Right chart area */
     .chart-box{flex:1;display:flex;flex-direction:column;gap:6px}
     .chart-canvas{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:4px;border:1px solid #eee;padding:6px}
@@ -102,7 +113,7 @@
         <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span> <!-- repeated to smooth scroll -->
       </div>
     </div>
-    <div style="min-width:180px;text-align:right;color:#fff;font-size:13px">Spot : <strong style="color:#bff3b8">25709.85</strong></div>
+    <div style="min-width:180px;text-align:right;color:#fff;font-size:13px">Spot : <strong id="spotVal" style="color:#bff3b8">25709.85</strong></div>
   </div>
 
   <div class="wrap">
@@ -204,34 +215,7 @@ Behavior:
 - You can paste this full index.html into your repo to replace existing page.
 */
 
-/* ---------- sample fallback data (keeps UI working if JSON missing) ---------- */
-const sampleRows = (() => {
-  const strikes = [25450,25500,25550,25600,25650,25700,25750,25800,25850,25900,25950,26000];
-  const rows = [];
-  for (let i=0;i<strikes.length;i++){
-    const k=strikes[i];
-    rows.push({
-      expiry: '2025-10-30',
-      type: i<6 ? 'put' : 'call',
-      strike: k,
-      bid: (Math.random()*60).toFixed(2),
-      ask: (Math.random()*80+20).toFixed(2),
-      mid: (Math.random()*70+10).toFixed(2),
-      impliedVol: (Math.random()*0.45+0.12).toFixed(4),
-      vol_used: (Math.random()*0.45+0.12).toFixed(4),
-      days: 12,
-      delta: (Math.random()*2-1).toFixed(4),
-      gamma: (Math.random()*0.05).toFixed(5),
-      vega: (Math.random()*10).toFixed(3),
-      theta: (-Math.random()*5).toFixed(3),
-      openInterest: Math.floor(Math.random()*900000),
-      volume: Math.floor(Math.random()*200000),
-      oiChange: (Math.random()*10000-5000).toFixed(0),
-      contract: 'OPT' + k
-    });
-  }
-  return rows;
-})();
+...existing code...
 
 /* ---------- rendering functions ---------- */
 function renderOptionTable(rows){
@@ -242,123 +226,56 @@ function renderOptionTable(rows){
     return;
   }
 
-  // split and mirror like in screenshot: left OI/vol columns, center strike, right OI/vol columns
-  // We'll show symmetric rows around ATM (approx center)
-  rows.sort((a,b)=>a.strike - b.strike);
+  // parse spot value from top ticker (if present)
+  let spot = null;
+  const spotEl = document.getElementById('spotVal');
+  if (spotEl){
+    const txt = spotEl.textContent || '';
+    const num = parseFloat(txt.toString().replace(/[^0-9.\-]/g,'')); // clean formatting
+    if (!Number.isNaN(num)) spot = num;
+  }
+
+  // fallback: if no spot, approximate ATM as middle strike
+  rows.sort((a,b)=>Number(a.strike) - Number(b.strike));
+
+  // determine index of nearest strike to spot
+  let atmIndex = null;
+  if (spot !== null){
+    let bestDiff = Infinity;
+    for (let i=0;i<rows.length;i++){
+      const s = Number(rows[i].strike);
+      const d = Math.abs(s - spot);
+      if (d < bestDiff){ bestDiff = d; atmIndex = i; }
+    }
+  } else {
+    atmIndex = Math.floor(rows.length/2);
+  }
 
   for (let i=0;i<rows.length;i++){
     const r = rows[i];
     const tr = document.createElement('tr');
 
     // left block: OI Chg | OI | Volume | s-reversal
-    const leftHtml = `<td>${r.oiChange}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.volume.toLocaleString()}</td><td class="leftCol">${r.type==='call' ? '' : 'Break Out'}</td>`;
+    const leftHtml = `<td>${r.oiChange}</td><td>${Number(r.openInterest).toLocaleString()}</td><td>${Number(r.volume).toLocaleString()}</td><td class="leftCol">${r.type==='call' ? '' : 'Break Out'}</td>`;
     // center strike cell (highlight ATM approx)
-    const strikeCell = `<td class="strike-cell leftCol">${r.strike.toFixed ? r.strike.toFixed(0) : r.strike}</td>`;
+    const strikeNum = Number(r.strike);
+    const strikeCellClass = 'strike-cell' + (i === atmIndex ? ' atm' : '');
+    const strikeCell = `<td class="${strikeCellClass} leftCol">${isFinite(strikeNum) ? strikeNum.toFixed(0) : r.strike}</td>`;
     // right block similar
-    const rightHtml = `<td class="leftCol">${r.type==='call' ? 'Break Down' : ''}</td><td>${r.volume.toLocaleString()}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.oiChange}</td>`;
+    const rightHtml = `<td class="leftCol">${r.type==='call' ? 'Break Down' : ''}</td><td>${Number(r.volume).toLocaleString()}</td><td>${Number(r.openInterest).toLocaleString()}</td><td>${r.oiChange}</td>`;
 
     tr.innerHTML = leftHtml + strikeCell + rightHtml;
+
+    // if this is ATM row, add class to highlight full horizontal band
+    if (i === atmIndex){
+      tr.classList.add('atm-row');
+    }
+
     tbody.appendChild(tr);
   }
 }
 
-/* ---------- chart (line) ---------- */
-let priceChart = null;
-function initChart(){
-  const ctx = document.getElementById('priceChart').getContext('2d');
-  priceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Price',
-        data: [],
-        borderColor: '#2b8cff',
-        backgroundColor: 'rgba(43,140,255,0.06)',
-        tension: 0.15,
-        pointRadius: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { display: true, grid: { color: '#f3f6f8' } },
-        y: { display: true, grid: { color: '#f3f6f8' } }
-      }
-    }
-  });
-}
-
-function updateChartWithSample(){
-  if (!priceChart) return;
-  const now = Date.now();
-  const labels = [];
-  const data = [];
-  for (let i=30;i>=0;i--){
-    labels.push(new Date(now - i*5*60*1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-    data.push(25650 + Math.sin(i/3)*80 + (Math.random()-0.5)*40);
-  }
-  priceChart.data.labels = labels;
-  priceChart.data.datasets[0].data = data;
-  priceChart.update();
-}
-
-/* ---------- fetch repo JSON if available (raw.githubusercontent) ---------- */
-async function fetchRepoJson(ticker='AAPL'){
-  const url = `https://raw.githubusercontent.com/askahldr-source/perfectmedicine/main/data/${ticker}_all.json`;
-  try {
-    const resp = await fetch(url, {cache:'no-store'});
-    if (!resp.ok) throw new Error('No repo json');
-    const j = await resp.json();
-    // j.rows expected (or j.data)
-    return j.rows || j.data || j;
-  } catch (err){
-    console.warn('repo json not available:', err);
-    return null;
-  }
-}
-
-/* ---------- orchestrator: load & render ---------- */
-let autoTimer = null;
-async function loadAndRender(){
-  const ticker = (document.getElementById('tickerSelect').value||'NIFTY');
-  // try repo json first
-  const repoRows = await fetchRepoJson(ticker);
-  if (repoRows && Array.isArray(repoRows) && repoRows.length>0){
-    renderOptionTable(repoRows);
-  } else {
-    renderOptionTable(sampleRows);
-  }
-  updateChartWithSample();
-  document.getElementById('refreshBtn').textContent = 'Refresh';
-}
-
-/* ---------- controls ---------- */
-document.getElementById('refreshBtn').addEventListener('click', async function(){
-  this.textContent = 'Loading...';
-  await loadAndRender();
-});
-
-document.getElementById('startBtn').addEventListener('click', function(){
-  if (autoTimer){
-    clearInterval(autoTimer);
-    autoTimer = null;
-    this.textContent = 'Auto';
-    setStatus('Auto stopped');
-  } else {
-    autoTimer = setInterval(loadAndRender, 60*1000); // every 60s
-    this.textContent = 'Stop Auto';
-    setStatus('Auto updating every 60s');
-  }
-});
-
-/* ---------- status helper ---------- */
-function setStatus(txt){
-  const el = document.getElementById('marketStatus');
-  if (el) el.textContent = txt;
-}
+...existing code...
 
 /* ---------- init ---------- */
 window.addEventListener('DOMContentLoaded', function(){
