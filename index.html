@@ -1,370 +1,271 @@
 <!doctype html>
 <html lang="bn">
 <head>
-  <meta charset="utf-8" />
-  <title>PerfectMedicine — Option Chain Dashboard</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <!-- Chart.js for the right-side chart -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.3.0/dist/chart.umd.min.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PerfectMedicine — Option Chain Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-  <style>
-    :root{
-      --accent:#ff7a00;
-      --accent-dark:#e66800;
-      --green:#17a673;
-      --muted:#666;
-      --sidebar-bg:#162029;
-      --page-bg:#f5f6f7;
-      --card-bg:#ffffff;
-    }
-    html,body{height:100%;margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:var(--page-bg);color:#111}
-    /* Top marquee ticker */
-    .top-ticker{
-      background:#0f1720;color:#fff;padding:6px 12px;display:flex;align-items:center;gap:12px;overflow:hidden;
-    }
-    .ticker-strip{white-space:nowrap;display:inline-block;animation:scroll 28s linear infinite}
-    .ticker-item{display:inline-block;margin-right:34px;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,0.03)}
-    @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+<style>
+:root{
+  --accent:#ff7a00;
+  --accent-dark:#e66800;
+  --green:#17a673;
+  --muted:#666;
+  --sidebar-bg:#162029;
+  --page-bg:#f5f6f7;
+  --card-bg:#ffffff;
+}
+html,body{
+  height:100%;margin:0;font-family:Inter,system-ui;
+  background:var(--page-bg);color:#111;
+}
+/* Ticker */
+.top-ticker{
+  background:#0f1720;color:#fff;padding:6px 12px;
+  display:flex;align-items:center;gap:12px;overflow:hidden;
+}
+.ticker-strip{white-space:nowrap;display:inline-block;animation:scroll 28s linear infinite}
+.ticker-item{display:inline-block;margin-right:34px;padding:6px 8px;border-radius:4px;background:rgba(255,255,255,0.03)}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-    /* Layout */
-    .wrap{display:flex;height:calc(100vh - 44px)} /* minus top ticker */
-    .sidebar{
-      width:62px;background:var(--sidebar-bg);color:#fff;padding:12px 8px;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;gap:12px;
-    }
-    .sidebar .icon{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:transparent;cursor:pointer}
-    .sidebar .icon:hover{background:rgba(255,255,255,0.05)}
-    .sidebar .logo{font-weight:700;color:var(--accent);font-size:14px;margin-bottom:6px}
+/* Layout */
+.wrap{display:flex;height:calc(100vh - 44px)}
+.sidebar{
+  width:64px;background:var(--sidebar-bg);color:#fff;padding:12px 8px;
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  box-shadow:2px 0 4px rgba(0,0,0,0.15);
+}
+.sidebar .logo{font-weight:700;color:var(--accent);font-size:15px}
+.sidebar .icon{
+  width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  transition:background .3s;cursor:pointer;
+}
+.sidebar .icon:hover{background:rgba(255,255,255,0.08)}
+.sidebar .icon.active{background:var(--accent);}
 
-    .main{
-      flex:1;padding:12px;box-sizing:border-box;display:flex;flex-direction:column;gap:10px;
-    }
+.main{flex:1;padding:12px;display:flex;flex-direction:column;gap:10px}
 
-    /* Top controls card */
-    .controls{
-      background:var(--card-bg);padding:14px;border-radius:6px;display:flex;gap:10px;align-items:center;box-shadow:0 1px 2px rgba(0,0,0,0.06);
-    }
-    .controls select,.controls input{padding:8px;border:1px solid #e3e7ea;border-radius:4px}
-    .controls button{padding:8px 12px;border-radius:4px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
-    .status-pill{background:#dff6e9;color:#0b7a4a;padding:6px 10px;border-radius:6px;font-weight:600}
+/* Controls */
+.controls{
+  background:var(--card-bg);padding:14px;border-radius:8px;display:flex;gap:10px;align-items:center;
+  box-shadow:0 2px 3px rgba(0,0,0,0.05);
+}
+.controls select,.controls input{
+  padding:8px;border:1px solid #e3e7ea;border-radius:4px
+}
+.controls button{
+  padding:8px 12px;border-radius:5px;border:1px solid var(--accent);
+  background:var(--accent);color:#fff;cursor:pointer;transition:.2s;
+}
+.controls button:hover{background:var(--accent-dark)}
+.status-pill{background:#dff6e9;color:#0b7a4a;padding:6px 10px;border-radius:6px;font-weight:600}
 
-    /* Content columns */
-    .content{
-      display:flex;gap:12px;flex:1;min-height:0; /* allow children to scroll */
-    }
+/* Content */
+.content{display:flex;gap:12px;flex:1;min-height:0}
+.left-pane,.right-pane{
+  background:var(--card-bg);border-radius:8px;padding:8px;display:flex;flex-direction:column;
+  box-shadow:0 1px 3px rgba(0,0,0,0.04);
+}
+.left-pane{flex:1;overflow:auto}
+.right-pane{width:420px;min-width:320px}
 
-    .left-pane{
-      flex:1;background:var(--card-bg);border-radius:6px;padding:8px;box-sizing:border-box;overflow:auto;display:flex;flex-direction:column;
-    }
-    .right-pane{
-      width:420px;min-width:320px;background:var(--card-bg);border-radius:6px;padding:8px;box-sizing:border-box;display:flex;flex-direction:column;
-    }
+/* Table */
+.table-wrap{overflow:auto;flex:1}
+table.opt-table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{position:sticky;top:0;background:#f8fafc;padding:8px;border-bottom:1px solid #e6edf2;text-align:center}
+tbody td{padding:7px;border-bottom:1px solid #f0f3f5;text-align:right}
+tbody tr:nth-child(even){background:rgba(0,0,0,0.01)}
+tbody tr:hover{background:#fffce0}
+td.leftCol{text-align:left;font-family:monospace}
+.strike-cell{background:linear-gradient(180deg,#ff9d4d,#ff8000);color:#fff;border-radius:4px;font-weight:700}
+.footer-note{font-size:12px;color:var(--muted);margin-top:8px}
 
-    /* Option chain table */
-    .table-wrap{overflow:auto;flex:1;border-radius:6px}
-    table.opt-table{width:100%;border-collapse:collapse;font-size:13px}
-    table.opt-table thead th{position:sticky;top:0;background:#f8fafc;padding:8px;border-bottom:1px solid #e6edf2;text-align:center}
-    table.opt-table tbody td{padding:7px;border-bottom:1px solid #f0f3f5;text-align:right}
-    table.opt-table tbody tr:nth-child(even){background:rgba(0,0,0,0.01)}
-    td.leftCol{text-align:left;font-family:monospace}
-    .strike-cell{background:linear-gradient(180deg,#ff9d4d,#ff8000);color:#fff;border-radius:4px;font-weight:700}
-    .highlight{background:#fffbe6}
-    .iv-up{color:#0b7a4a;font-weight:700}
-    .iv-down{color:#a00;font-weight:700}
+/* Chart */
+.chart-canvas{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:6px;border:1px solid #eee;padding:6px}
 
-    /* Right chart area */
-    .chart-box{flex:1;display:flex;flex-direction:column;gap:6px}
-    .chart-canvas{background:linear-gradient(180deg,#fff,#fbfdff);border-radius:4px;border:1px solid #eee;padding:6px}
-    .legend{display:flex;gap:8px;align-items:center;font-size:13px}
-
-    /* Footer hint */
-    .footer-note{font-size:12px;color:var(--muted);margin-top:8px}
-
-    /* Responsive */
-    @media (max-width:1000px){
-      .content{flex-direction:column}
-      .right-pane{width:100%;min-width:0}
-    }
-
-  </style>
+/* Responsive */
+@media(max-width:768px){
+  .content{flex-direction:column}
+  .right-pane{width:100%;min-width:0}
+}
+</style>
 </head>
 <body>
-  <!-- top ticker -->
-  <div class="top-ticker">
-    <div style="font-weight:700;padding:4px 8px;background:var(--accent);border-radius:6px">National Stock Exchange Option Chain</div>
-    <div style="flex:1;overflow:hidden">
-      <div class="ticker-strip" aria-hidden="true">
-        <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span>
-        <span class="ticker-item">TATAELXSI 1689.6 ▼0.30%</span>
-        <span class="ticker-item">EICHERMOT 7042.5 ▲0.79%</span>
-        <span class="ticker-item">TATACONSUM 1166 ▲1.45%</span>
-        <span class="ticker-item">HDFCBANK 1500 ▲0.22%</span>
-        <span class="ticker-item">RELIANCE 2540.9 ▲0.12%</span>
-        <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span> <!-- repeated to smooth scroll -->
-      </div>
+
+<!-- Marquee -->
+<div class="top-ticker">
+  <div style="font-weight:700;padding:4px 8px;background:var(--accent);border-radius:6px">NSE Option Chain</div>
+  <div style="flex:1;overflow:hidden">
+    <div class="ticker-strip">
+      <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span>
+      <span class="ticker-item">TATAELXSI 1689.6 ▼0.30%</span>
+      <span class="ticker-item">HDFCBANK 1500 ▲0.22%</span>
+      <span class="ticker-item">RELIANCE 2540.9 ▲0.12%</span>
+      <span class="ticker-item">INFY 1621 ▲0.25%</span>
+      <span class="ticker-item">NIFTY 25709.85 ▲0.49%</span>
     </div>
-    <div style="min-width:180px;text-align:right;color:#fff;font-size:13px">Spot : <strong style="color:#bff3b8">25709.85</strong></div>
+  </div>
+  <div style="min-width:180px;text-align:right;color:#fff;font-size:13px">
+    Spot : <strong style="color:#bff3b8">25709.85</strong>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="sidebar">
+    <div class="logo">AiLTP</div>
+    <div class="icon active" title="Dashboard">🏠</div>
+    <div class="icon" title="OptionChain">📊</div>
+    <div class="icon" title="Reports">📁</div>
+    <div class="icon" title="Tracker">📈</div>
+    <div class="icon" title="Learn">🎓</div>
+    <div style="flex:1"></div>
+    <div class="icon" style="background:#0b7a4a" title="Support">☎️</div>
   </div>
 
-  <div class="wrap">
-    <!-- left sidebar -->
-    <div class="sidebar" title="menu">
-      <div class="logo">AiLTP</div>
-      <div class="icon" title="Dashboard">🏠</div>
-      <div class="icon" title="OptionChain">📊</div>
-      <div class="icon" title="Reports">📁</div>
-      <div class="icon" title="Tracker">📈</div>
-      <div class="icon" title="Learn">🎓</div>
+  <div class="main">
+    <div class="controls">
+      <label>Index:
+        <select id="tickerSelect">
+          <option value="NIFTY">NIFTY</option>
+          <option value="BANKNIFTY">BANKNIFTY</option>
+          <option value="FINNIFTY">FINNIFTY</option>
+        </select>
+      </label>
+      <label>Expiry:
+        <select id="expirySelect">
+          <option value="all">All</option>
+          <option value="2025-10-30">2025-10-30</option>
+          <option value="2025-11-07">2025-11-07</option>
+        </select>
+      </label>
       <div style="flex:1"></div>
-      <div class="icon" style="background:#0b7a4a" title="Support">☎️</div>
+      <div class="status-pill" id="marketStatus">Market: Stable</div>
     </div>
 
-    <div class="main">
-      <!-- controls -->
-      <div class="controls">
-        <label>Index:
-          <select id="tickerSelect">
-            <option value="NIFTY">NIFTY</option>
-            <option value="BANKNIFTY">BANKNIFTY</option>
-            <option value="FINNIFTY">FINNIFTY</option>
-          </select>
-        </label>
-
-        <label>Expiry:
-          <select id="expirySelect">
-            <option value="all">All</option>
-            <option value="2025-10-30">2025-10-30</option>
-            <option value="2025-11-07">2025-11-07</option>
-          </select>
-        </label>
-
-        <div style="flex:1"></div>
-
-        <div class="status-pill" id="marketStatus">NIFTY IS IN BULL RUN</div>
-      </div>
-
-      <div class="content">
-        <!-- left: option chain table -->
-        <div class="left-pane">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-            <strong>Option Chain</strong>
-            <div style="flex:1"></div>
-            <button id="refreshBtn">Refresh</button>
-            <button id="startBtn">Auto</button>
-          </div>
-
-          <div class="table-wrap">
-            <table class="opt-table" aria-describedby="Option chain table">
-              <thead>
-                <tr>
-                  <th>OI Chg</th><th>OI</th><th>VOLUME</th><th>S-REVERSAL</th>
-                  <th class="leftCol">ATM ▾ STRIKE</th>
-                  <th>S-REVERSAL</th><th>VOLUME</th><th>OI</th><th>OI Chg</th>
-                </tr>
-              </thead>
-              <tbody id="optBody">
-                <!-- rows injected by JS -->
-              </tbody>
-            </table>
-          </div>
-
-          <div class="footer-note">Tip: click "Auto" to enable periodic updates (uses repo JSON if available, else sample data)</div>
+    <div class="content">
+      <div class="left-pane">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <strong>Option Chain</strong>
+          <div style="flex:1"></div>
+          <button id="refreshBtn">Refresh</button>
+          <button id="startBtn">Auto</button>
         </div>
 
-        <!-- right: chart -->
-        <div class="right-pane">
-          <div style="display:flex;align-items:center;justify-content:space-between">
-            <strong>Price Chart</strong>
-            <div class="legend">
-              <div style="color:var(--green);font-weight:700">S Risky</div>
-              <div style="color:#999">|</div>
-              <div style="color:#333">5 min</div>
-            </div>
-          </div>
-          <div class="chart-box">
-            <div class="chart-canvas">
-              <canvas id="priceChart" height="320"></canvas>
-            </div>
-            <div style="display:flex;gap:8px;justify-content:space-between;margin-top:6px">
-              <div><small class="muted">Max Gain: 25821.6</small></div>
-              <div><small class="muted">Max Pain: 25466.1</small></div>
-            </div>
-          </div>
+        <div class="table-wrap">
+          <table class="opt-table">
+            <thead>
+              <tr>
+                <th>OI Chg</th><th>OI</th><th>VOLUME</th><th>PUT</th>
+                <th class="leftCol">STRIKE</th>
+                <th>CALL</th><th>VOLUME</th><th>OI</th><th>OI Chg</th>
+              </tr>
+            </thead>
+            <tbody id="optBody"></tbody>
+          </table>
         </div>
+        <div class="footer-note">Tip: click “Auto” to enable 1-min auto-refresh.</div>
       </div>
 
+      <div class="right-pane">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <strong>Price Chart</strong>
+          <small style="color:#888">5-min</small>
+        </div>
+        <div class="chart-canvas"><canvas id="priceChart" height="320"></canvas></div>
+      </div>
     </div>
   </div>
+</div>
 
 <script>
-/*
-Integrated option-chain + live updater script.
-Behavior:
-- Tries to fetch JSON from repo: /data/<TICKER>_all.json (raw.githubusercontent)
-- If not found, uses local sample data to render table & chart
-- You can paste this full index.html into your repo to replace existing page.
-*/
-
-/* ---------- sample fallback data (keeps UI working if JSON missing) ---------- */
-const sampleRows = (() => {
-  const strikes = [25450,25500,25550,25600,25650,25700,25750,25800,25850,25900,25950,26000];
-  const rows = [];
-  for (let i=0;i<strikes.length;i++){
-    const k=strikes[i];
-    rows.push({
-      expiry: '2025-10-30',
-      type: i<6 ? 'put' : 'call',
-      strike: k,
-      bid: (Math.random()*60).toFixed(2),
-      ask: (Math.random()*80+20).toFixed(2),
-      mid: (Math.random()*70+10).toFixed(2),
-      impliedVol: (Math.random()*0.45+0.12).toFixed(4),
-      vol_used: (Math.random()*0.45+0.12).toFixed(4),
-      days: 12,
-      delta: (Math.random()*2-1).toFixed(4),
-      gamma: (Math.random()*0.05).toFixed(5),
-      vega: (Math.random()*10).toFixed(3),
-      theta: (-Math.random()*5).toFixed(3),
-      openInterest: Math.floor(Math.random()*900000),
-      volume: Math.floor(Math.random()*200000),
-      oiChange: (Math.random()*10000-5000).toFixed(0),
-      contract: 'OPT' + k
-    });
-  }
-  return rows;
-})();
-
-/* ---------- rendering functions ---------- */
-function renderOptionTable(rows){
-  const tbody = document.getElementById('optBody');
-  tbody.innerHTML = '';
-  if (!rows || rows.length===0){
-    tbody.innerHTML = '<tr><td colspan="9" class="leftCol">No option data</td></tr>';
-    return;
-  }
-
-  // split and mirror like in screenshot: left OI/vol columns, center strike, right OI/vol columns
-  // We'll show symmetric rows around ATM (approx center)
-  rows.sort((a,b)=>a.strike - b.strike);
-
-  for (let i=0;i<rows.length;i++){
-    const r = rows[i];
-    const tr = document.createElement('tr');
-
-    // left block: OI Chg | OI | Volume | s-reversal
-    const leftHtml = `<td>${r.oiChange}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.volume.toLocaleString()}</td><td class="leftCol">${r.type==='call' ? '' : 'Break Out'}</td>`;
-    // center strike cell (highlight ATM approx)
-    const strikeCell = `<td class="strike-cell leftCol">${r.strike.toFixed ? r.strike.toFixed(0) : r.strike}</td>`;
-    // right block similar
-    const rightHtml = `<td class="leftCol">${r.type==='call' ? 'Break Down' : ''}</td><td>${r.volume.toLocaleString()}</td><td>${r.openInterest.toLocaleString()}</td><td>${r.oiChange}</td>`;
-
-    tr.innerHTML = leftHtml + strikeCell + rightHtml;
-    tbody.appendChild(tr);
-  }
+/* --------- Data Generator --------- */
+function generateSampleRows(){
+  const strikes=[25450,25500,25550,25600,25650,25700,25750,25800,25850,25900];
+  return strikes.map(k=>({
+    strike:k,
+    type:k<25700?'put':'call',
+    openInterest:Math.floor(Math.random()*900000),
+    volume:Math.floor(Math.random()*200000),
+    oiChange:(Math.random()*10000-5000).toFixed(0)
+  }));
 }
 
-/* ---------- chart (line) ---------- */
-let priceChart = null;
+/* --------- Rendering --------- */
+function renderOptionTable(rows){
+  const tbody=document.getElementById('optBody');
+  if(!rows||!rows.length){
+    tbody.innerHTML='<tr><td colspan="9" class="leftCol">No data</td></tr>';return;
+  }
+  tbody.innerHTML=rows.map(r=>`
+  <tr>
+    <td>${r.oiChange}</td>
+    <td>${r.openInterest.toLocaleString()}</td>
+    <td>${r.volume.toLocaleString()}</td>
+    <td class="leftCol">${r.type==='put'?'Break Out':''}</td>
+    <td class="strike-cell leftCol">${r.strike}</td>
+    <td class="leftCol">${r.type==='call'?'Break Down':''}</td>
+    <td>${r.volume.toLocaleString()}</td>
+    <td>${r.openInterest.toLocaleString()}</td>
+    <td>${r.oiChange}</td>
+  </tr>`).join('');
+}
+
+/* --------- Chart Setup --------- */
+let priceChart=null;
 function initChart(){
-  const ctx = document.getElementById('priceChart').getContext('2d');
-  priceChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: [],
-      datasets: [{
-        label: 'Price',
-        data: [],
-        borderColor: '#2b8cff',
-        backgroundColor: 'rgba(43,140,255,0.06)',
-        tension: 0.15,
-        pointRadius: 0
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { display: true, grid: { color: '#f3f6f8' } },
-        y: { display: true, grid: { color: '#f3f6f8' } }
-      }
-    }
+  const ctx=document.getElementById('priceChart');
+  priceChart=new Chart(ctx,{
+    type:'line',
+    data:{labels:[],datasets:[{
+      data:[],borderColor:'#2b8cff',backgroundColor:'rgba(43,140,255,0.08)',
+      tension:0.15,pointRadius:0
+    }]},
+    options:{responsive:true,plugins:{legend:{display:false}}}
   });
 }
 
-function updateChartWithSample(){
-  if (!priceChart) return;
-  const now = Date.now();
-  const labels = [];
-  const data = [];
-  for (let i=30;i>=0;i--){
-    labels.push(new Date(now - i*5*60*1000).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
-    data.push(25650 + Math.sin(i/3)*80 + (Math.random()-0.5)*40);
+function updateChart(){
+  const now=Date.now();
+  const labels=[],data=[];
+  for(let i=30;i>=0;i--){
+    labels.push(new Date(now-i*5*60*1000).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    data.push(25650+Math.sin(i/3)*80+(Math.random()-0.5)*40);
   }
-  priceChart.data.labels = labels;
-  priceChart.data.datasets[0].data = data;
+  priceChart.data.labels=labels;
+  priceChart.data.datasets[0].data=data;
   priceChart.update();
 }
 
-/* ---------- fetch repo JSON if available (raw.githubusercontent) ---------- */
-async function fetchRepoJson(ticker='AAPL'){
-  const url = `https://raw.githubusercontent.com/askahldr-source/perfectmedicine/main/data/${ticker}_all.json`;
-  try {
-    const resp = await fetch(url, {cache:'no-store'});
-    if (!resp.ok) throw new Error('No repo json');
-    const j = await resp.json();
-    // j.rows expected (or j.data)
-    return j.rows || j.data || j;
-  } catch (err){
-    console.warn('repo json not available:', err);
-    return null;
-  }
+/* --------- Repo Fetch --------- */
+async function fetchRepoJson(ticker){
+  const url=`https://raw.githubusercontent.com/askahldr-source/perfectmedicine/main/data/${ticker}_all.json`;
+  try{
+    const resp=await fetch(url,{cache:'no-store'});
+    if(!resp.ok) throw new Error('Not found');
+    const j=await resp.json();
+    return j.rows||j.data||[];
+  }catch(e){console.warn('Fallback to sample:',e);return null;}
 }
 
-/* ---------- orchestrator: load & render ---------- */
-let autoTimer = null;
+/* --------- Controller --------- */
+let autoTimer=null;
 async function loadAndRender(){
-  const ticker = (document.getElementById('tickerSelect').value||'NIFTY');
-  // try repo json first
-  const repoRows = await fetchRepoJson(ticker);
-  if (repoRows && Array.isArray(repoRows) && repoRows.length>0){
-    renderOptionTable(repoRows);
-  } else {
-    renderOptionTable(sampleRows);
-  }
-  updateChartWithSample();
-  document.getElementById('refreshBtn').textContent = 'Refresh';
+  const ticker=document.getElementById('tickerSelect').value;
+  document.getElementById('marketStatus').textContent=`Loading ${ticker}…`;
+  const repoData=await fetchRepoJson(ticker);
+  renderOptionTable(repoData?.length?repoData:generateSampleRows());
+  updateChart();
+  document.getElementById('marketStatus').textContent=`${ticker} Updated at ${new Date().toLocaleTimeString()}`;
 }
 
-/* ---------- controls ---------- */
-document.getElementById('refreshBtn').addEventListener('click', async function(){
-  this.textContent = 'Loading...';
-  await loadAndRender();
-});
-
-document.getElementById('startBtn').addEventListener('click', function(){
-  if (autoTimer){
-    clearInterval(autoTimer);
-    autoTimer = null;
-    this.textContent = 'Auto';
-    setStatus('Auto stopped');
-  } else {
-    autoTimer = setInterval(loadAndRender, 60*1000); // every 60s
-    this.textContent = 'Stop Auto';
-    setStatus('Auto updating every 60s');
-  }
-});
-
-/* ---------- status helper ---------- */
-function setStatus(txt){
-  const el = document.getElementById('marketStatus');
-  if (el) el.textContent = txt;
-}
-
-/* ---------- init ---------- */
-window.addEventListener('DOMContentLoaded', function(){
-  initChart();
-  loadAndRender();
-});
+/* --------- Events --------- */
+document.getElementById('refreshBtn').onclick=loadAndRender;
+document.getElementById('startBtn').onclick=function(){
+  if(autoTimer){clearInterval(autoTimer);autoTimer=null;this.textContent='Auto';}
+  else{autoTimer=setInterval(loadAndRender,60*1000);this.textContent='Stop';}
+};
+window.addEventListener('DOMContentLoaded',()=>{initChart();loadAndRender();});
 </script>
 </body>
 </html>
